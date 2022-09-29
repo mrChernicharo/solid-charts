@@ -1,6 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@solid-primitives/tween': ^1.2.1
   '@types/d3': ^7.4.0
   d3: ^7.6.1
   solid-js: ^1.5.1
@@ -9,6 +10,7 @@ specifiers:
   vite-plugin-solid: ^2.3.0
 
 dependencies:
+  '@solid-primitives/tween': 1.2.1_solid-js@1.5.1
   d3: 7.6.1
   solid-js: 1.5.1
 
@@ -373,6 +375,14 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
+
+  /@solid-primitives/tween/1.2.1_solid-js@1.5.1:
+    resolution: {integrity: sha512-PKR4UG5jvrS+CIIQcwj2uHYoUc4ZTiDsDZtTMe98l2N6ubtRMMTAFratg91cQW/6+NF/EP7O2SoYmA7Uh+ydpw==}
+    peerDependencies:
+      solid-js: ^1.3.1
+    dependencies:
+      solid-js: 1.5.1
+    dev: false
 
   /@types/d3-array/3.0.3:
     resolution: {integrity: sha512-Reoy+pKnvsksN0lQUlcH6dOGjRZ/3WRwXR//m+/8lt1BXeI4xyaUZoqULNjyXXRuh0Mj4LNpkCvhUpQlY3X5xQ==}
