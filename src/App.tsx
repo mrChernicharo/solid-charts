@@ -1,4 +1,4 @@
-import { arc } from 'd3';
+import { arc, range } from 'd3';
 import {
 	Component,
 	createEffect,
@@ -109,21 +109,30 @@ const Chart: Component<{
 
 	const computed = createMemo(() => {
 		const radius = height() / 2 - margin.top;
+
 		const paths: {
 			path: string;
 			color: string;
 		}[] = [];
 
-		for (const dataPoint of props.data) {
+		let angle = 0;
+		const total = props.data.reduce((acc, d) => acc + d.value, 0);
+		const arcScale = (v: number) => (v / total) * (Math.PI * 2);
+
+		for (const [i, dataPoint] of props.data.entries()) {
 			const { label, value } = dataPoint;
+			const endAngle = angle + arcScale(value);
 
 			const path = arcBuilder({
 				outerRadius: radius,
 				innerRadius: radius / 2,
-				startAngle: 0,
-				endAngle: Math.PI * 2,
+				startAngle: angle,
+				endAngle: endAngle,
+				padAngle: 0.01,
 			})!;
-			paths.push({ path, color: 'blue' });
+
+			angle = endAngle;
+			paths.push({ path, color: `#${i * 100}` });
 		}
 
 		return { paths };
