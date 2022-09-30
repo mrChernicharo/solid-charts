@@ -135,7 +135,6 @@ const Chart: Component<{
 
 const App: Component = () => {
   const [store, setStore] = createStore(initialWidgets);
-  const [isTransitioning, setIsTransitioning] = createSignal(false);
 
   return (
     <div style={s.body}>
@@ -144,6 +143,7 @@ const App: Component = () => {
       <div>
         <For each={store.widgets}>
           {(widget, idx) => {
+            const [isTransitioning, setIsTransitioning] = createSignal(false);
             return (
               <div>
                 <input
@@ -164,11 +164,14 @@ const App: Component = () => {
                         onChange={(e) => {
                           if (!isTransitioning()) {
                             setIsTransitioning(true);
-                            const prevVal = store.widgets[idx()].data[di()].value;
-                            const updateChartData = (v: number) => setStore("widgets", idx(), "data", di(), "value", v);
 
-                            useTransitionValue(prevVal, +e.currentTarget.value, TRANSITION_DURATION, updateChartData);
-                            setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
+                            setTimeout(() => {
+                              const prevVal = store.widgets[idx()].data[di()].value;
+                              const updateChartData = (v: number) => setStore("widgets", idx(), "data", di(), "value", v);
+
+                              useTransitionValue(prevVal, +inputRef()?.value!, TRANSITION_DURATION, updateChartData);
+                              setIsTransitioning(false);
+                            }, TRANSITION_DURATION);
                           }
                         }}
                       />
