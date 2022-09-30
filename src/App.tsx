@@ -22,30 +22,30 @@ const initialWidgets = {
       data: [
         { label: "A", value: 20 },
         { label: "B", value: 30 },
-        // { label: "C", value: 10 },
+        { label: "C", value: 10 },
       ],
     },
-    // {
-    //   type: "ring",
-    //   title: "Chart 02",
-    //   height: 200,
-    //   width: window.innerWidth * 0.5,
-    //   data: [
-    //     { label: "A", value: 90 },
-    //     { label: "B", value: 40 },
-    //     { label: "C", value: 50 },
-    //     { label: "D", value: 70 },
-    //     { label: "E", value: 110 },
-    //   ],
-    //   // data: [
-    //   // 	{ label: 'A', x: 0, y: 80 },
-    //   // 	{ label: 'A', x: 100, y: 120 },
-    //   // 	{ label: 'A', x: 200, y: 90 },
-    //   // 	{ label: 'B', x: 0, y: 40 },
-    //   // 	{ label: 'B', x: 100, y: 80 },
-    //   // 	{ label: 'B', x: 200, y: 70 },
-    //   // ],
-    // },
+    {
+      type: "ring",
+      title: "Chart 02",
+      height: 200,
+      width: window.innerWidth * 0.5,
+      data: [
+        { label: "A", value: 90 },
+        { label: "B", value: 40 },
+        { label: "C", value: 50 },
+        { label: "D", value: 70 },
+        { label: "E", value: 110 },
+      ],
+      // data: [
+      // 	{ label: 'A', x: 0, y: 80 },
+      // 	{ label: 'A', x: 100, y: 120 },
+      // 	{ label: 'A', x: 200, y: 90 },
+      // 	{ label: 'B', x: 0, y: 40 },
+      // 	{ label: 'B', x: 100, y: 80 },
+      // 	{ label: 'B', x: 200, y: 70 },
+      // ],
+    },
   ],
 };
 
@@ -142,27 +142,28 @@ const Chart: Component<{
   width: number;
   data: DataPoint[];
 }> = (props) => {
-  let headerRef!: HTMLDivElement;
-
-  const [height, setHeight] = createSignal(0);
-  const [chartData, setChartData] = createStore<DataPoint[]>([]);
-  const [prevData, setPrevData] = createStore<DataPoint[]>([]);
   const margin = { top: 10, bottom: 10, left: 10, right: 10 };
 
-  const computed = createMemo(() => {
+  let headerRef!: HTMLDivElement;
+  let prevData: DataPoint[] = [];
+
+  const [height, setHeight] = createSignal(0);
+  const [chartData, setChartData] = createSignal<DataPoint[]>([]);
+  //   const [prevData, setPrevData] = createSignal<DataPoint[]>([]);
+
+  const computed = createMemo((prev) => {
     const radius = height() / 2 - margin.top;
+    console.log("computed", { prevData });
 
     const paths: {
       path: string;
       color: string;
     }[] = [];
-
     let angle = 0;
-    const total = chartData.reduce((acc, d) => acc + d.value, 0);
-
+    const total = chartData().reduce((acc, d) => acc + d.value, 0);
     const arcScale = (v: number) => (v / total) * (Math.PI * 2);
 
-    for (const [i, dataPoint] of chartData.entries()) {
+    for (const [i, dataPoint] of chartData().entries()) {
       const { value } = dataPoint;
       const endAngle = angle + arcScale(value);
 
@@ -181,18 +182,18 @@ const Chart: Component<{
     return { paths };
   });
 
-  createEffect(() => {
-    setChartData((prevData) => {
-      console.log(unwrap(prevData));
-
-      return props.data;
-    });
-    console.log(unwrap(chartData));
-    // console.log({ prev: prevData[0]?.value ?? null, curr: chartData[0].value });
+  createEffect((prev) => {
+    console.log(prev);
+    setChartData((prev) => props.data);
   });
 
   //   createEffect(() => {
-  //     console.log({ prev: prevData[0]?.value ?? null, curr: chartData[0].value });
+  //     // console.log({ chartDataVal: chartData()[0].value });
+  //     // console.log({ chartData: chartData() });
+
+  //     chartData().forEach((d) => {
+  //       console.log(d.value);
+  //     });
   //   });
 
   createEffect(() => {
@@ -226,32 +227,41 @@ const App: Component = () => {
 
       <div>
         <For each={store.widgets}>
-          {(widget, idx) => (
-            <div>
-              <input
-                type="text"
-                value={widget.title}
-                onChange={(e) => {
-                  setStore("widgets", idx(), "title", e.currentTarget.value);
-                }}
-              />
-              <For each={widget.data}>
-                {(dataPoint, di) => (
-                  <input
-                    type="number"
-                    value={dataPoint.value}
-                    onChange={(e) =>
-                      //prettier-ignore
-                      setStore(
-						"widgets", idx(), "data", di(), "value",
-                        +e.currentTarget.value
-                      )
-                    }
-                  />
-                )}
-              </For>
-            </div>
-          )}
+          {(widget, idx) => {
+            const [inputRef, setInputRef] = createSignal<HTMLInputElement>();
+            return (
+              <div>
+                <input
+                  type="text"
+                  value={widget.title}
+                  onChange={(e) => {
+                    setStore("widgets", idx(), "title", e.currentTarget.value);
+                  }}
+                />
+                <For each={widget.data}>
+                  {(dataPoint, di) => (
+                    <input
+                      ref={setInputRef}
+                      type="number"
+                      value={inputRef()?.value || dataPoint.value}
+                      onChange={(e) => {
+                        const prevVal = store.widgets[idx()].data[di()].value;
+                        const updateChart = (v: number) =>
+                          setStore("widgets", idx(), "data", di(), "value", v);
+
+                        transitionValue(prevVal, +e.currentTarget.value, 1000, updateChart)
+                        //prettier-ignore
+                        //     setStore(
+                        // 	"widgets", idx(), "data", di(), "value",
+                        //     +e.currentTarget.value
+                        //   )
+                      }}
+                    />
+                  )}
+                </For>
+              </div>
+            );
+          }}
         </For>
       </div>
 
