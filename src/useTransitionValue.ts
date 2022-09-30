@@ -9,7 +9,7 @@ export const useTransitionValue = async (
   let curr = start;
   let diff = final - start;
   let itCount = 60 * (duration / 1000);
-  // console.log({ itCount, diff });
+  console.log({ itCount, diff });
 
   const step = diff / itCount;
   let i = 0;

@@ -1,19 +1,11 @@
 import { useTransitionValue } from "./useTransitionValue";
 import { arc } from "d3";
-import {
-  Component,
-  createEffect,
-  createMemo,
-  createSignal,
-  JSXElement,
-  For,
-  Index,
-  untrack,
-} from "solid-js";
+import { Component, createEffect, createMemo, createSignal, JSXElement, For, Index, untrack, useTransition } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import { initialWidgets, s } from "./lib/constants";
 
 const arcBuilder = arc();
+const TRANSITION_DURATION = 750;
 
 interface DataPoint {
   label: string;
@@ -87,15 +79,12 @@ const Chart: Component<{
   const margin = { top: 10, bottom: 10, left: 10, right: 10 };
 
   let headerRef!: HTMLDivElement;
-  let prevData: DataPoint[] = [];
 
   const [height, setHeight] = createSignal(0);
   const [chartData, setChartData] = createSignal<DataPoint[]>([]);
-  //   const [prevData, setPrevData] = createSignal<DataPoint[]>([]);
 
   const computed = createMemo((prev) => {
     const radius = height() / 2 - margin.top;
-    console.log("computed", { prevData });
 
     const paths: {
       path: string;
@@ -135,15 +124,9 @@ const Chart: Component<{
   return (
     <div>
       <div ref={headerRef}>{props.title}</div>
-      <svg
-        width={props.width}
-        height={height() >= 0 ? height() : 0}
-        style={{ background: "#666" }}
-      >
+      <svg width={props.width} height={height() >= 0 ? height() : 0} style={{ background: "#666" }}>
         <g style={{ transform: `translate(50%, ${height() / 2}px)` }}>
-          <For each={computed().paths}>
-            {(p) => <path d={p.path} fill={p.color} />}
-          </For>
+          <For each={computed().paths}>{(p) => <path d={p.path} fill={p.color} />}</For>
         </g>
       </svg>
     </div>
@@ -152,6 +135,7 @@ const Chart: Component<{
 
 const App: Component = () => {
   const [store, setStore] = createStore(initialWidgets);
+  const [isTransitioning, setIsTransitioning] = createSignal(false);
 
   return (
     <div style={s.body}>
@@ -160,7 +144,6 @@ const App: Component = () => {
       <div>
         <For each={store.widgets}>
           {(widget, idx) => {
-            const [inputRef, setInputRef] = createSignal<HTMLInputElement>();
             return (
               <div>
                 <input
@@ -171,31 +154,33 @@ const App: Component = () => {
                   }}
                 />
                 <For each={widget.data}>
-                  {(dataPoint, di) => (
-                    <input
-                      ref={setInputRef}
-                      type="number"
-                      value={inputRef()?.value || dataPoint.value}
-                      onChange={(e) => {
-                        const prevVal = store.widgets[idx()].data[di()].value;
+                  {(dataPoint, di) => {
+                    const [inputRef, setInputRef] = createSignal<HTMLInputElement>();
+                    return (
+                      <input
+                        ref={setInputRef}
+                        type="number"
+                        value={inputRef()?.value || dataPoint.value}
+                        onChange={(e) => {
+                          if (!isTransitioning()) {
+                            setIsTransitioning(true);
+                            const prevVal = store.widgets[idx()].data[di()].value;
+                            const updateChartData = (v: number) => setStore("widgets", idx(), "data", di(), "value", v);
 
-                        const updateChart = (v: number) =>
-                          setStore("widgets", idx(), "data", di(), "value", v);
-
-                        // prettier-ignore
-                        useTransitionValue(prevVal, +e.currentTarget.value, 1000, updateChart)
-                      }}
-                    />
-                  )}
+                            useTransitionValue(prevVal, +e.currentTarget.value, TRANSITION_DURATION, updateChartData);
+                            setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
+                          }
+                        }}
+                      />
+                    );
+                  }}
                 </For>
                 <div>
                   <button
-                    onClick={(e) =>
-                      setStore("widgets", idx(), "data", (prev) => [
-                        ...prev,
-                        { label: "0" + prev.length, value: 0 },
-                      ])
-                    }
+                    onClick={(e) => {
+                      // const prevWidgets = [...store.widgets];
+                      setStore("widgets", idx(), "data", (prev) => [...prev, { label: "0" + prev.length, value: 0 }]);
+                    }}
                   >
                     ADD
                   </button>
@@ -206,22 +191,22 @@ const App: Component = () => {
         </For>
       </div>
 
-      <Index each={store.widgets}>
+      <For each={store.widgets}>
         {(widget, idx) => (
           <ResizableContainer
-            initialHeight={widget().height}
-            initialWidth={widget().width}
+            initialHeight={widget.height}
+            initialWidth={widget.width}
             onDimensionsChange={(dims) =>
-              setStore("widgets", idx, {
+              setStore("widgets", idx(), {
                 height: dims.height,
                 width: dims.width,
               })
             }
           >
-            <Chart {...store.widgets[idx]} />
+            <Chart {...store.widgets[idx()]} />
           </ResizableContainer>
         )}
-      </Index>
+      </For>
 
       <pre>{JSON.stringify(store, null, 2)}</pre>
     </div>
