@@ -1,5 +1,5 @@
 import { transitionValue } from "./useTransitionValue";
-import { arc, transition } from "d3";
+import { arc } from "d3";
 import {
   Component,
   createEffect,
@@ -8,10 +8,46 @@ import {
   JSXElement,
   For,
   Index,
+  untrack,
 } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createStore, unwrap } from "solid-js/store";
 
-transitionValue(100, 1000, 2000, console.log);
+const initialWidgets = {
+  widgets: [
+    {
+      type: "ring",
+      title: "Chart 01",
+      height: 400,
+      width: window.innerWidth * 0.75,
+      data: [
+        { label: "A", value: 20 },
+        { label: "B", value: 30 },
+        // { label: "C", value: 10 },
+      ],
+    },
+    // {
+    //   type: "ring",
+    //   title: "Chart 02",
+    //   height: 200,
+    //   width: window.innerWidth * 0.5,
+    //   data: [
+    //     { label: "A", value: 90 },
+    //     { label: "B", value: 40 },
+    //     { label: "C", value: 50 },
+    //     { label: "D", value: 70 },
+    //     { label: "E", value: 110 },
+    //   ],
+    //   // data: [
+    //   // 	{ label: 'A', x: 0, y: 80 },
+    //   // 	{ label: 'A', x: 100, y: 120 },
+    //   // 	{ label: 'A', x: 200, y: 90 },
+    //   // 	{ label: 'B', x: 0, y: 40 },
+    //   // 	{ label: 'B', x: 100, y: 80 },
+    //   // 	{ label: 'B', x: 200, y: 70 },
+    //   // ],
+    // },
+  ],
+};
 
 const s = {
   body: {
@@ -107,11 +143,10 @@ const Chart: Component<{
   data: DataPoint[];
 }> = (props) => {
   let headerRef!: HTMLDivElement;
-  let prevPaths: {
-    path: string;
-    color: string;
-  }[] = [];
+
   const [height, setHeight] = createSignal(0);
+  const [chartData, setChartData] = createStore<DataPoint[]>([]);
+  const [prevData, setPrevData] = createStore<DataPoint[]>([]);
   const margin = { top: 10, bottom: 10, left: 10, right: 10 };
 
   const computed = createMemo(() => {
@@ -123,12 +158,12 @@ const Chart: Component<{
     }[] = [];
 
     let angle = 0;
-    const total = props.data.reduce((acc, d) => acc + d.value, 0);
+    const total = chartData.reduce((acc, d) => acc + d.value, 0);
 
     const arcScale = (v: number) => (v / total) * (Math.PI * 2);
 
-    for (const [i, dataPoint] of props.data.entries()) {
-      const { label, value } = dataPoint;
+    for (const [i, dataPoint] of chartData.entries()) {
+      const { value } = dataPoint;
       const endAngle = angle + arcScale(value);
 
       const path = arcBuilder({
@@ -140,17 +175,25 @@ const Chart: Component<{
       })!;
 
       angle = endAngle;
-      paths.push({ path, color: `#${i * 100}` });
+      paths.push({ path, color: `#${(i + 2) * 100}` });
     }
 
-    console.log({
-      prevPaths,
-      paths,
-    });
-
-    prevPaths = paths.slice();
     return { paths };
   });
+
+  createEffect(() => {
+    setChartData((prevData) => {
+      console.log(unwrap(prevData));
+
+      return props.data;
+    });
+    console.log(unwrap(chartData));
+    // console.log({ prev: prevData[0]?.value ?? null, curr: chartData[0].value });
+  });
+
+  //   createEffect(() => {
+  //     console.log({ prev: prevData[0]?.value ?? null, curr: chartData[0].value });
+  //   });
 
   createEffect(() => {
     setHeight(props.height - headerRef.getBoundingClientRect().height);
@@ -175,44 +218,7 @@ const Chart: Component<{
 };
 
 const App: Component = () => {
-  const [store, setStore] = createStore({
-    widgets: [
-      {
-        type: "bar",
-        title: "01",
-        height: 400,
-        width: window.innerWidth * 0.75,
-        data: [
-          { label: "A", value: 20 },
-          { label: "B", value: 30 },
-          { label: "C", value: 10 },
-          { label: "D", value: 100 },
-          { label: "E", value: 10 },
-        ],
-      },
-      {
-        type: "bar",
-        title: "02",
-        height: 200,
-        width: window.innerWidth * 0.5,
-        data: [
-          { label: "A", value: 90 },
-          { label: "B", value: 40 },
-          { label: "C", value: 50 },
-          { label: "D", value: 70 },
-          { label: "E", value: 110 },
-        ],
-        // data: [
-        // 	{ label: 'A', x: 0, y: 80 },
-        // 	{ label: 'A', x: 100, y: 120 },
-        // 	{ label: 'A', x: 200, y: 90 },
-        // 	{ label: 'B', x: 0, y: 40 },
-        // 	{ label: 'B', x: 100, y: 80 },
-        // 	{ label: 'B', x: 200, y: 70 },
-        // ],
-      },
-    ],
-  });
+  const [store, setStore] = createStore(initialWidgets);
 
   return (
     <div style={s.body}>
@@ -225,9 +231,9 @@ const App: Component = () => {
               <input
                 type="text"
                 value={widget.title}
-                onChange={(e) =>
-                  setStore("widgets", idx(), "title", e.currentTarget.value)
-                }
+                onChange={(e) => {
+                  setStore("widgets", idx(), "title", e.currentTarget.value);
+                }}
               />
               <For each={widget.data}>
                 {(dataPoint, di) => (

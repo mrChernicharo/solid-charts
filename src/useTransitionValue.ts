@@ -1,5 +1,3 @@
-import { useTransition } from "solid-js";
-
 export const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const transitionValue = async (
@@ -17,7 +15,9 @@ export const transitionValue = async (
   let i = 0;
   while (i <= itCount) {
     await wait(duration / itCount);
-    cb(curr);
+
+    i === itCount ? cb(Math.round(curr)) : cb(curr);
+
     curr += step;
     i++;
   }
