@@ -1,4 +1,4 @@
-import { transitionValue } from "./useTransitionValue";
+import { useTransitionValue } from "./useTransitionValue";
 import { arc } from "d3";
 import {
   Component,
@@ -11,65 +11,7 @@ import {
   untrack,
 } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
-
-const initialWidgets = {
-  widgets: [
-    {
-      type: "ring",
-      title: "Chart 01",
-      height: 400,
-      width: window.innerWidth * 0.75,
-      data: [
-        { label: "A", value: 20 },
-        { label: "B", value: 30 },
-        { label: "C", value: 10 },
-      ],
-    },
-    {
-      type: "ring",
-      title: "Chart 02",
-      height: 200,
-      width: window.innerWidth * 0.5,
-      data: [
-        { label: "A", value: 90 },
-        { label: "B", value: 40 },
-        { label: "C", value: 50 },
-        { label: "D", value: 70 },
-        { label: "E", value: 110 },
-      ],
-      // data: [
-      // 	{ label: 'A', x: 0, y: 80 },
-      // 	{ label: 'A', x: 100, y: 120 },
-      // 	{ label: 'A', x: 200, y: 90 },
-      // 	{ label: 'B', x: 0, y: 40 },
-      // 	{ label: 'B', x: 100, y: 80 },
-      // 	{ label: 'B', x: 200, y: 70 },
-      // ],
-    },
-  ],
-};
-
-const s = {
-  body: {
-    // width: '100vw',
-    // height: "100vh",
-  },
-  h1: {
-    margin: "0",
-  },
-  container: {
-    border: "1px solid",
-    height: "400px",
-  },
-  dragHandle: {
-    width: "24px",
-    height: "24px",
-    background: "#222",
-    "clip-path": "polygon(0% 100%, 100% 0%, 100% 100%)",
-    right: "0",
-    bottom: "0",
-  },
-};
+import { initialWidgets, s } from "./lib/constants";
 
 const arcBuilder = arc();
 
@@ -183,18 +125,8 @@ const Chart: Component<{
   });
 
   createEffect((prev) => {
-    console.log(prev);
-    setChartData((prev) => props.data);
+    setChartData(props.data);
   });
-
-  //   createEffect(() => {
-  //     // console.log({ chartDataVal: chartData()[0].value });
-  //     // console.log({ chartData: chartData() });
-
-  //     chartData().forEach((d) => {
-  //       console.log(d.value);
-  //     });
-  //   });
 
   createEffect(() => {
     setHeight(props.height - headerRef.getBoundingClientRect().height);
@@ -246,19 +178,28 @@ const App: Component = () => {
                       value={inputRef()?.value || dataPoint.value}
                       onChange={(e) => {
                         const prevVal = store.widgets[idx()].data[di()].value;
+
                         const updateChart = (v: number) =>
                           setStore("widgets", idx(), "data", di(), "value", v);
 
-                        transitionValue(prevVal, +e.currentTarget.value, 1000, updateChart)
-                        //prettier-ignore
-                        //     setStore(
-                        // 	"widgets", idx(), "data", di(), "value",
-                        //     +e.currentTarget.value
-                        //   )
+                        // prettier-ignore
+                        useTransitionValue(prevVal, +e.currentTarget.value, 1000, updateChart)
                       }}
                     />
                   )}
                 </For>
+                <div>
+                  <button
+                    onClick={(e) =>
+                      setStore("widgets", idx(), "data", (prev) => [
+                        ...prev,
+                        { label: "0" + prev.length, value: 0 },
+                      ])
+                    }
+                  >
+                    ADD
+                  </button>
+                </div>
               </div>
             );
           }}

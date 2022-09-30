@@ -1,6 +1,6 @@
 export const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export const transitionValue = async (
+export const useTransitionValue = async (
   start: number,
   final: number,
   duration: number,
@@ -9,7 +9,7 @@ export const transitionValue = async (
   let curr = start;
   let diff = final - start;
   let itCount = 60 * (duration / 1000);
-  console.log({ itCount, diff });
+  // console.log({ itCount, diff });
 
   const step = diff / itCount;
   let i = 0;
