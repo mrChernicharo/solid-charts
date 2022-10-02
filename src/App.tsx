@@ -1,7 +1,6 @@
 import { Component, createSignal, Index } from "solid-js";
 import Chart from "./Chart";
-import ResizableContainer from "./ResizableConteiner";
-import TransitionContainer from "./TransitionContainer";
+import ResizableContainer from "./ResizableContainer";
 
 export interface DataPoint {
   label: string;
@@ -16,6 +15,7 @@ const INITIAL_DATA: DataPoint[] = [
 
 const App: Component = () => {
   const [overallData, setOverallData] = createSignal(INITIAL_DATA);
+  const [chartDims, setChartDims] = createSignal({ width: 0, height: 0 });
   return (
     <div>
       <p>
@@ -40,7 +40,11 @@ const App: Component = () => {
           </label>
         )}
       </Index>
-      <ResizableContainer>
+      <ResizableContainer
+        initialHeight={400}
+        initialWidth={400}
+        onDimensionsChange={setChartDims}
+      >
         <Chart data={overallData()} />
       </ResizableContainer>
     </div>

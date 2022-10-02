@@ -11,7 +11,14 @@ const Chart: Component<{ data: DataPoint[] }> = (props) => {
       data={props.data}
       onUpdate={setChartData}
     >
-      <div style={{ height: "300px", border: "1px solid" }}>
+      <div
+        style={{
+          height: "300px",
+          border: "1px solid",
+          overflow: "hidden",
+          background: "#222",
+        }}
+      >
         <h3>Chart</h3>
         <pre>{"data " + JSON.stringify(props.data)}</pre>
         <pre>{"transitioned " + JSON.stringify(chartData())}</pre>
