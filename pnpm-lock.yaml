@@ -6,6 +6,7 @@ specifiers:
   d3: ^7.6.1
   solid-js: ^1.5.1
   typescript: ^4.8.2
+  use-transition-value: ^0.0.0
   vite: ^3.0.9
   vite-plugin-solid: ^2.3.0
 
@@ -13,6 +14,7 @@ dependencies:
   '@solid-primitives/tween': 1.2.1_solid-js@1.5.1
   d3: 7.6.1
   solid-js: 1.5.1
+  use-transition-value: 0.0.0_solid-js@1.5.1
 
 devDependencies:
   '@types/d3': 7.4.0
@@ -1344,6 +1346,14 @@ packages:
       escalade: 3.1.1
       picocolors: 1.0.0
     dev: true
+
+  /use-transition-value/0.0.0_solid-js@1.5.1:
+    resolution: {integrity: sha512-VTqu4ZVunaWDYNVxfgeCk+UE1hqSiFeVw/KTfGDBukACyzkhqjkJmY1lL65peUKaa2Bbu8F1oq56LhHnlPMu/A==}
+    peerDependencies:
+      solid-js: ^1.5.1
+    dependencies:
+      solid-js: 1.5.1
+    dev: false
 
   /vite-plugin-solid/2.3.0_solid-js@1.5.1+vite@3.0.9:
     resolution: {integrity: sha512-N2sa54C3UZC2nN5vpj5o6YP+XdIAZW6n6xv8OasxNAcAJPFeZT7EOVvumL0V4c8hBz1yuYniMWdESY8807fVSg==}

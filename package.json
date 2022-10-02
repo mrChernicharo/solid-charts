@@ -18,6 +18,7 @@
   "dependencies": {
     "@solid-primitives/tween": "^1.2.1",
     "d3": "^7.6.1",
-    "solid-js": "^1.5.1"
+    "solid-js": "^1.5.1",
+    "use-transition-value": "^0.0.0"
   }
 }
