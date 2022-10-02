@@ -15,7 +15,7 @@ const INITIAL_DATA: DataPoint[] = [
 
 const App: Component = () => {
   const [overallData, setOverallData] = createSignal(INITIAL_DATA);
-  const [chartDims, setChartDims] = createSignal({ width: 0, height: 0 });
+  const [chartDims, setChartDims] = createSignal({ width: 400, height: 400 });
   return (
     <div>
       <p>
@@ -45,7 +45,13 @@ const App: Component = () => {
         initialWidth={400}
         onDimensionsChange={setChartDims}
       >
-        <Chart data={overallData()} />
+        <Chart
+          data={overallData()}
+          height={chartDims().height}
+          width={chartDims().width}
+          title="my chart"
+          type="pie"
+        />
       </ResizableContainer>
     </div>
   );
