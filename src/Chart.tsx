@@ -1,10 +1,15 @@
-import { Component, createEffect, createSignal, For } from "solid-js";
+import {
+  Component,
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+} from "solid-js";
 import { DataPoint } from "./App";
 import TransitionContainer from "./TransitionContainer";
+import { arc } from "d3";
 
-// import { Component, createSignal, createMemo, createEffect, For } from "solid-js";
-// import { unwrap } from "solid-js/store";
-// import { DataPoint } from "./App";
+const arcBuilder = arc();
 
 const Chart: Component<{
   type: string;
@@ -19,20 +24,44 @@ const Chart: Component<{
   const [height, setHeight] = createSignal(props.height);
   const [chartData, setChartData] = createSignal<DataPoint[]>(props.data);
 
+  const computed = createMemo(() => {
+    const radius = height() / 2 - margin.top;
+
+    const paths: {
+      path: string;
+      color: string;
+    }[] = [];
+
+    let angle = 0;
+    const total = chartData().reduce((acc, d) => acc + d.value, 0);
+
+    const arcScale = (v: number) => (v / total) * (Math.PI * 2);
+
+    for (const [i, dataPoint] of chartData().entries()) {
+      const { value } = dataPoint;
+      const endAngle = angle + arcScale(value);
+
+      const path = arcBuilder({
+        outerRadius: radius,
+        innerRadius: radius / 2,
+        startAngle: angle,
+        endAngle: endAngle,
+        padAngle: 0.01,
+      })!;
+
+      angle = endAngle;
+      paths.push({ path, color: `#${(i + 2) * 100}` });
+    }
+
+    return { paths };
+  });
+
   createEffect(() => {
-    console.log(height());
-    setHeight(props.height - headerRef.getBoundingClientRect().height || 0);
+    setHeight(props.height - headerRef.getBoundingClientRect().height);
   });
 
   return (
-    <div
-      style={{
-        height: `${props.height}px`,
-        border: "1px solid",
-        overflow: "hidden",
-        background: "#222",
-      }}
-    >
+    <div>
       <header style={{ background: "#444" }} ref={headerRef}>
         <span>{props.title}</span>
         <pre style={{ margin: "0" }}>
@@ -47,10 +76,15 @@ const Chart: Component<{
       >
         <svg
           width={props.width}
-          height={height() || props.height}
+          height={height()}
           style={{ background: "lightblue" }}
         >
-          <g>
+          <g style={{ transform: "translate(50%, 50%)" }}>
+            <For each={computed().paths}>
+              {(p) => <path d={p.path} fill={p.color} />}
+            </For>
+          </g>
+          {/* <g>
             <For each={chartData()}>
               {(d, i) => {
                 return (
@@ -58,7 +92,7 @@ const Chart: Component<{
                 );
               }}
             </For>
-          </g>
+          </g> */}
         </svg>
       </TransitionContainer>
     </div>
