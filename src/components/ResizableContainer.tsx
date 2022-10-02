@@ -1,5 +1,5 @@
 import { Component, createEffect, createSignal, JSXElement } from "solid-js";
-import { s } from "./styles";
+import { s } from "../lib/constants";
 
 const ResizableContainer: Component<{
   initialHeight: number;

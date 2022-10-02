@@ -5,15 +5,9 @@ import {
   createSignal,
   For,
 } from "solid-js";
-import { DataPoint } from "./App";
+import { DataPoint } from "../App";
 import TransitionContainer from "./TransitionContainer";
-import {
-  arc,
-  interpolateBlues,
-  interpolateCool,
-  interpolateDiscrete,
-  interpolateInferno,
-} from "d3";
+import { arc, interpolateCool, interpolateInferno } from "d3";
 
 const arcBuilder = arc();
 
@@ -29,6 +23,9 @@ const Chart: Component<{
 
   const [height, setHeight] = createSignal(props.height);
   const [chartData, setChartData] = createSignal<DataPoint[]>(props.data);
+
+  const getColor = (num: number) =>
+    interpolateCool((num + 1) / chartData().length);
 
   const computed = createMemo(() => {
     const radius = height() / 2 - margin.top;
@@ -66,7 +63,7 @@ const Chart: Component<{
       angle = endAngle;
       paths.push({
         path,
-        color: interpolateCool((i + 1) / chartData().length),
+        color: getColor(i),
       });
     }
 
@@ -93,7 +90,7 @@ const Chart: Component<{
             <div style={{ display: "flex" }}>
               <div
                 style={{
-                  background: interpolateCool((i() + 1) / chartData().length),
+                  background: getColor(i()),
                   width: "24px",
                   height: "16px",
                   "border-radius": "4px",
@@ -113,15 +110,6 @@ const Chart: Component<{
             {(p) => <path d={p.path} fill={p.color} />}
           </For>
         </g>
-        {/* <g>
-            <For each={chartData()}>
-              {(d, i) => {
-                return (
-                  <rect x={(i() + 1) * 50} y={0} width={20} height={d.value} />
-                );
-              }}
-            </For>
-          </g> */}
       </svg>
     </TransitionContainer>
   );

@@ -1,26 +1,15 @@
 import { Component, createSignal, Index } from "solid-js";
-import Chart from "./Chart";
-import ResizableContainer from "./ResizableContainer";
-
-export interface DataPoint {
-  label: string;
-  value: number;
-}
-
-const INITIAL_DATA: DataPoint[] = [
-  { label: "A", value: 10 },
-  { label: "B", value: 20 },
-  { label: "C", value: 10 },
-];
+import Chart from "./components/Chart";
+import ResizableContainer from "./components/ResizableContainer";
+import { INITIAL_DATA } from "./lib/constants";
 
 const App: Component = () => {
   const [overallData, setOverallData] = createSignal(INITIAL_DATA);
   const [chartDims, setChartDims] = createSignal({ width: 400, height: 400 });
   return (
     <div>
-      <p>
-        <strong>App</strong>
-      </p>
+      <h1>Solid Charts</h1>
+
       <Index each={overallData()}>
         {(d, idx) => (
           <label for={d().label}>
@@ -40,6 +29,7 @@ const App: Component = () => {
           </label>
         )}
       </Index>
+
       <ResizableContainer
         initialHeight={400}
         initialWidth={400}

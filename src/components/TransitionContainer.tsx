@@ -5,7 +5,7 @@ import {
   createSignal,
   JSXElement,
 } from "solid-js";
-import { DataPoint } from "./App";
+import { DataPoint } from "../App";
 import { useTransitionValue } from "use-transition-value";
 
 const TransitionContainer: Component<{
