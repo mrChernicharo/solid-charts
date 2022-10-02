@@ -1,15 +1,6 @@
 import { Component, createEffect, createSignal, JSXElement } from "solid-js";
 import { s } from "./styles";
 
-// const ResizableContainer: Component<{ children: JSXElement }> = (props) => {
-//   return (
-//     <div>
-//       <div>resizable container</div>
-//       {props.children}
-//     </div>
-//   );
-// };
-
 const ResizableContainer: Component<{
   initialHeight: number;
   initialWidth: number;
@@ -21,14 +12,15 @@ const ResizableContainer: Component<{
   const [isDragging, setIsDragging] = createSignal(false);
 
   createEffect(() => {
-    document.body.addEventListener("pointermove", (e) => {
+    document.addEventListener("pointermove", (e) => {
       if (isDragging()) {
         setWidth(width() + e.movementX);
         setHeight(height() + e.movementY);
         props.onDimensionsChange({ width: width(), height: height() });
       }
     });
-    document.body.addEventListener("pointerup", (e) => {
+    document.addEventListener("pointerup", (e) => {
+      console.log(e);
       setIsDragging(false);
     });
   });
