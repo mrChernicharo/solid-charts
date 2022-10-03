@@ -6,7 +6,8 @@ import {
   JSXElement,
 } from "solid-js";
 import { DataPoint } from "../lib/constants";
-import { useTransitionValue } from "use-transition-value";
+import { useTransitionValue } from "../lib/helpers";
+// import { useTransitionValue } from "use-transition-value";
 
 const TransitionContainer: Component<{
   children: JSXElement;
@@ -21,11 +22,12 @@ const TransitionContainer: Component<{
     props.data
   );
 
-  const updateTransitionList = (curr: number, idx: number) =>
+  const updateTransitionList = (curr: number, idx: number) => {
+    // console.log({ curr, idx });
     setTransitionList((list) =>
       list.map((d, i) => (i === idx ? { ...d, value: curr } : d))
     );
-
+  };
   // data setup: receiving bulk data via props
   createEffect(() => {
     prevList = data();
@@ -66,6 +68,7 @@ const TransitionContainer: Component<{
     data().forEach((d, idx, arr) => {
       if (prevList[idx] && prevList[idx].value !== arr[idx].value) {
         // console.log("useTransitionValue! value updating!", { prevList, arr, value: arr[idx].value });
+        console.log("standalone value updated");
         useTransitionValue({
           id: String(idx),
           initial: prevList[idx].value,
@@ -74,11 +77,40 @@ const TransitionContainer: Component<{
           cb: (val: number) => updateTransitionList(val, idx),
         });
       }
+
+      if (prevList[idx] && prevList[idx].hidden !== arr[idx].hidden) {
+        const [hasHidden, wasHidden] = [arr[idx].hidden, prevList[idx].hidden];
+        if (hasHidden) {
+          console.log("visibility changed: Has Hidden", { idx });
+          useTransitionValue({
+            id: String(idx),
+            initial: arr[idx].value,
+            final: 0,
+            duration: props.duration,
+            cb: (val: number) => updateTransitionList(val, idx),
+          });
+        }
+
+        if (wasHidden) {
+          console.log("visibility changed: Was Hidden");
+          useTransitionValue({
+            id: String(idx),
+            initial: 0,
+            final: arr[idx].value,
+            duration: props.duration,
+            cb: (val: number) => updateTransitionList(val, idx),
+          });
+        }
+      }
     });
   });
 
   createEffect(() => {
     props.onUpdate(transitionList());
+  });
+
+  createEffect(() => {
+    // console.log(transitionList()[0]);
   });
   return <>{props.children}</>;
 };

@@ -25,12 +25,6 @@ const ChartLegend: Component<{
             style={{ display: "flex", "margin-bottom": "5px" }}
             onClick={(e) => {
               props.onToggleHiddenItem(d, idx());
-
-              // setChartData((prev) =>
-              //   prev.map((o, i) =>
-              //     i === idx() ? { ...o, hidden: !o.hidden } : o
-              //   )
-              // );
             }}
           >
             <div

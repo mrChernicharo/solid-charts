@@ -37,16 +37,17 @@ const Chart: Component<{
 
     let angle = 0;
     const total = chartData().reduce(
-      (acc, d) => acc + (d.hidden ? 0 : d.value),
+      (acc, d) => acc + d.value,
+      // (acc, d) => acc + (d.hidden ? 0 : d.value),
       0
     );
 
     const arcScale = (v: number) => (v / total) * (Math.PI * 2);
 
     for (const [i, dataPoint] of chartData().entries()) {
-      let { value, hidden } = dataPoint;
-      if (hidden) value = 0;
+      let { value } = dataPoint;
 
+      // const endAngle = angle + arcScale(hidden ? 0 : value);
       const endAngle = angle + arcScale(value);
 
       const path = arcBuilder({
@@ -69,6 +70,10 @@ const Chart: Component<{
 
   createEffect(() => {
     setHeight(props.height - legendsRef.getBoundingClientRect().height);
+  });
+
+  createEffect(() => {
+    console.log({ data: props.data });
   });
 
   return (

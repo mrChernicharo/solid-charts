@@ -20,8 +20,7 @@ const ResizableContainer: Component<{
       }
     });
     document.addEventListener("pointerup", (e) => {
-      console.log(e);
-      setIsDragging(false);
+      if (isDragging()) setIsDragging(false);
     });
   });
 

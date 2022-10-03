@@ -40,8 +40,12 @@ const App: Component = () => {
           height={chartDims().height}
           width={chartDims().width}
           onToggleHidden={(d, i) => {
-            console.log({ d, i });
-            // setOverallData(prev =>   )
+            // console.log({ d, i });
+            setOverallData((prev) =>
+              prev.map((o, oIdx) =>
+                oIdx === i ? { ...o, hidden: !o.hidden } : o
+              )
+            );
           }}
           title="my chart"
           type="pie"
