@@ -44,6 +44,7 @@ const App: Component = () => {
 
       <Chart
         data={overallData()}
+        resizable={true}
         initialDims={{ width: 400, height: 400 }}
         transitionDuration={1000}
         title="my chart"

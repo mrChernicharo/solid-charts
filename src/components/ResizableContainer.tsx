@@ -1,9 +1,16 @@
-import { Component, createEffect, createSignal, JSXElement } from "solid-js";
+import {
+  Component,
+  createEffect,
+  createSignal,
+  JSXElement,
+  Show,
+} from "solid-js";
 import { s } from "../lib/constants";
 
 const ResizableContainer: Component<{
   initialHeight: number;
   initialWidth: number;
+  canResize: boolean;
   onDimensionsChange: (dimensions: { width: number; height: number }) => void;
   children: JSXElement;
 }> = (props) => {
@@ -13,7 +20,7 @@ const ResizableContainer: Component<{
 
   createEffect(() => {
     document.addEventListener("pointermove", (e) => {
-      if (isDragging()) {
+      if (isDragging() && props.canResize) {
         setWidth(width() + e.movementX);
         setHeight(height() + e.movementY);
         props.onDimensionsChange({ width: width(), height: height() });
@@ -34,18 +41,20 @@ const ResizableContainer: Component<{
       }}
     >
       {props.children}
-      <div
-        style={{
-          ...s.dragHandle,
-          position: "absolute",
-          cursor: isDragging() ? "grabbing" : "grab",
-        }}
-        onPointerMove={(e) => {
-          if (e.buttons === 1 && !isDragging()) {
-            setIsDragging(true);
-          }
-        }}
-      ></div>
+      <Show when={props.canResize}>
+        <div
+          style={{
+            ...s.dragHandle,
+            position: "absolute",
+            cursor: isDragging() ? "grabbing" : "grab",
+          }}
+          onPointerMove={(e) => {
+            if (e.buttons === 1 && !isDragging()) {
+              setIsDragging(true);
+            }
+          }}
+        ></div>
+      </Show>
     </div>
   );
 };

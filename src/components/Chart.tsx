@@ -19,6 +19,7 @@ const Chart: Component<{
   title: string;
   initialDims: { width: number; height: number };
   transitionDuration: number;
+  resizable: boolean;
   data: DataPoint[];
 }> = (props) => {
   let legendsRef!: HTMLDivElement;
@@ -98,6 +99,7 @@ const Chart: Component<{
       onUpdate={setChartData}
     >
       <ResizableContainer
+        canResize={props.resizable}
         initialHeight={props.initialDims.height}
         initialWidth={props.initialDims.width}
         onDimensionsChange={setDims}
