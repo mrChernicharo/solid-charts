@@ -19,6 +19,7 @@ const Chart: Component<{
   height: number;
   width: number;
   data: DataPoint[];
+  onToggleHidden: (d: DataPoint, idx: number) => void;
 }> = (props) => {
   let legendsRef!: HTMLDivElement;
   const margin = { top: 10, bottom: 10, left: 10, right: 10 };
@@ -76,7 +77,12 @@ const Chart: Component<{
       data={props.data}
       onUpdate={setChartData}
     >
-      <ChartLegend ref={legendsRef} data={props.data} title={props.title} />
+      <ChartLegend
+        ref={legendsRef}
+        data={props.data}
+        title={props.title}
+        onToggleHiddenItem={props.onToggleHidden}
+      />
 
       <svg width={props.width} height={height()} style={{ background: "#444" }}>
         <g style={{ transform: `translate(50%, ${height() / 2}px)` }}>

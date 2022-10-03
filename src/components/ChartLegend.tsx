@@ -6,6 +6,7 @@ const ChartLegend: Component<{
   ref: HTMLDivElement;
   title: string;
   data: DataPoint[];
+  onToggleHiddenItem: (d: DataPoint, idx: number) => void;
 }> = (props) => {
   return (
     <header
@@ -23,7 +24,7 @@ const ChartLegend: Component<{
           <div
             style={{ display: "flex", "margin-bottom": "5px" }}
             onClick={(e) => {
-              console.log(d, idx());
+              props.onToggleHiddenItem(d, idx());
 
               // setChartData((prev) =>
               //   prev.map((o, i) =>

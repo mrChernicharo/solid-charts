@@ -39,6 +39,10 @@ const App: Component = () => {
           data={overallData()}
           height={chartDims().height}
           width={chartDims().width}
+          onToggleHidden={(d, i) => {
+            console.log({ d, i });
+            // setOverallData(prev =>   )
+          }}
           title="my chart"
           type="pie"
         />
