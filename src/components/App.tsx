@@ -46,13 +46,6 @@ const App: Component = () => {
         data={overallData()}
         initialDims={{ width: 400, height: 400 }}
         transitionDuration={1000}
-        onToggleHidden={(d, i) =>
-          setOverallData((prev) =>
-            prev.map((o, oIdx) =>
-              oIdx === i ? { ...o, hidden: !o.hidden } : o
-            )
-          )
-        }
         title="my chart"
         type="pie"
       />

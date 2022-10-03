@@ -2,7 +2,7 @@ import { Component, For } from "solid-js";
 import { DataPoint, s } from "../lib/constants";
 import { getColor } from "../lib/helpers";
 
-const ChartLegend: Component<{
+const Legend: Component<{
   ref: HTMLDivElement;
   title: string;
   data: DataPoint[];
@@ -37,4 +37,4 @@ const ChartLegend: Component<{
   );
 };
 
-export default ChartLegend;
+export default Legend;

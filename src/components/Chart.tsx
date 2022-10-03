@@ -7,9 +7,9 @@ import {
 } from "solid-js";
 import { DataPoint } from "../lib/constants";
 import TransitionContainer from "./TransitionContainer";
-import { arc, interpolateCool, interpolateInferno, interpolateReds } from "d3";
+import { arc } from "d3";
 import { getColor } from "../lib/helpers";
-import ChartLegend from "./ChartLegend";
+import Legends from "./Legends";
 import ResizableContainer from "./ResizableContainer";
 
 const arcBuilder = arc();
@@ -20,14 +20,16 @@ const Chart: Component<{
   initialDims: { width: number; height: number };
   transitionDuration: number;
   data: DataPoint[];
-  onToggleHidden: (d: DataPoint, idx: number) => void;
 }> = (props) => {
   let legendsRef!: HTMLDivElement;
   const margin = { top: 10, bottom: 10, left: 10, right: 10 };
 
   const [height, setHeight] = createSignal(props.initialDims.height);
   const [dims, setDims] = createSignal(props.initialDims);
-  const [chartData, setChartData] = createSignal<DataPoint[]>(props.data);
+
+  const [bulkData, setBulkData] = createSignal<DataPoint[]>(props.data);
+  const [chartData, setChartData] = createSignal<DataPoint[]>([]);
+  let filteredPoints: number[] = [];
 
   const computed = createMemo(() => {
     const radius = height() / 2 - margin.top;
@@ -71,8 +73,20 @@ const Chart: Component<{
   });
 
   createEffect(() => {
-    props.data.length; // changes in data.length might affect legendsRef.height
+    filteredPoints = bulkData()
+      .map((d, i) => (d.hidden ? i : -1))
+      .filter((o) => o !== -1);
+
+    // changes in data.length might affect legendsRef.height
     setHeight(dims().height - legendsRef.getBoundingClientRect().height);
+  });
+
+  createEffect(() => {
+    setBulkData(
+      props.data.map((d, i) =>
+        filteredPoints.includes(i) ? { ...d, hidden: true } : d
+      )
+    );
   });
 
   createEffect(() => {});
@@ -80,7 +94,7 @@ const Chart: Component<{
   return (
     <TransitionContainer
       duration={props.transitionDuration}
-      data={props.data}
+      data={bulkData()}
       onUpdate={setChartData}
     >
       <ResizableContainer
@@ -88,11 +102,17 @@ const Chart: Component<{
         initialWidth={props.initialDims.width}
         onDimensionsChange={setDims}
       >
-        <ChartLegend
+        <Legends
           ref={legendsRef}
-          data={props.data}
+          data={bulkData()}
           title={props.title}
-          onToggleHiddenItem={props.onToggleHidden}
+          onToggleItem={(d, i) =>
+            setBulkData((prev) =>
+              prev.map((o, oIdx) =>
+                oIdx === i ? { ...o, hidden: !o.hidden } : o
+              )
+            )
+          }
         />
 
         <svg
