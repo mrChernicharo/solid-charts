@@ -57,7 +57,7 @@ const TransitionContainer: Component<{
       useTransitionValue({
         id: String(idx),
         initial: 0,
-        final: data()[idx].value || 0,
+        final: data()[idx]?.value || 0,
         duration: props.duration,
         cb: (val: number) => updateTransitionList(val, idx),
       });
