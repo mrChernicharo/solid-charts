@@ -6,8 +6,7 @@ import {
   JSXElement,
 } from "solid-js";
 import { DataPoint } from "../lib/constants";
-import { useTransitionValue } from "../lib/helpers";
-// import { useTransitionValue } from "use-transition-value";
+import { useTransitionValue } from "use-transition-value";
 
 const TransitionContainer: Component<{
   children: JSXElement;
@@ -66,12 +65,13 @@ const TransitionContainer: Component<{
 
     // standalone value updated
     data().forEach((d, idx, arr) => {
+      // hidden item
       if (prevList[idx] && prevList[idx].hidden && arr[idx].hidden) {
-        console.log("hidden item", idx);
         updateTransitionList(0, idx);
         return { ...d, value: 0, hidden: true };
       }
 
+      // updating item
       if (prevList[idx] && prevList[idx].value !== arr[idx].value) {
         useTransitionValue({
           id: String(idx),
@@ -97,7 +97,6 @@ const TransitionContainer: Component<{
 
         // just shown
         if (prevList[idx].hidden) {
-          console.log("visibility changed: Was Hidden");
           useTransitionValue({
             id: String(idx),
             initial: 0,
@@ -114,9 +113,6 @@ const TransitionContainer: Component<{
     props.onUpdate(transitionList());
   });
 
-  createEffect(() => {
-    // console.log(transitionList()[0]);
-  });
   return <>{props.children}</>;
 };
 

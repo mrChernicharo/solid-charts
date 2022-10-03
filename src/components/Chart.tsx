@@ -72,18 +72,15 @@ const Chart: Component<{
     setHeight(props.height - legendsRef.getBoundingClientRect().height);
   });
 
-  createEffect(() => {
-    console.log({ data: props.data });
-  });
+  // createEffect(() => {
+  //   console.log({ data: props.data });
+  // });
 
   return (
     <TransitionContainer
       duration={1000}
       data={props.data}
-      onUpdate={(d) => {
-        console.log(d);
-        setChartData(d);
-      }}
+      onUpdate={setChartData}
     >
       <ChartLegend
         ref={legendsRef}
