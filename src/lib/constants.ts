@@ -24,6 +24,10 @@ export const INITIAL_STORE: { [id: string]: DataPoint[] } = {
     { label: "E", value: 25 },
     { label: "F", value: 10 },
   ],
+  "chart 32": [
+    { label: "G", value: 40 },
+    { label: "H", value: 25 },
+  ],
 };
 
 export const s = {

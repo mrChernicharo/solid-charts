@@ -8,19 +8,49 @@ const App: Component = () => {
   const [store, setStore] = createStore(INITIAL_STORE);
   const [overallData, setOverallData] = createSignal(INITIAL_DATA);
 
-  const storeItems = () => Object.keys(store).map((k) => store[k]);
+  // const storeItems = () => Object.keys(store).map((k) => store[k]);
 
   return (
     <div>
       <h1>Solid Charts</h1>
 
-      <Index each={storeItems()}>
-        {(chart, idx) => {
-          return <pre>{JSON.stringify(chart())}</pre>;
-        }}
-      </Index>
-
       <div>
+        <Index each={Object.keys(store)}>
+          {(chartName, idx) => {
+            return (
+              <>
+                <p>{chartName}</p>
+                <pre>{JSON.stringify(store[chartName()])}</pre>
+
+                <Index each={store[chartName()]}>
+                  {(dataPoint, dIdx) => {
+                    return (
+                      <label for={dataPoint().label}>
+                        {dataPoint().label}
+                        <input
+                          type="number"
+                          id={dataPoint().label}
+                          value={dataPoint().value}
+                          onChange={(e) => {
+                            setStore(
+                              chartName(),
+                              dIdx,
+                              "value",
+                              +e.currentTarget.value
+                            );
+                          }}
+                        />
+                      </label>
+                    );
+                  }}
+                </Index>
+              </>
+            );
+          }}
+        </Index>
+
+        <hr />
+
         <Index each={overallData()}>
           {(d, idx) => (
             <label for={d().label}>
@@ -44,7 +74,7 @@ const App: Component = () => {
           onClick={(e) => {
             setOverallData((prev) => [
               ...prev,
-              { label: "0" + n++, value: Math.round(Math.random() * 100) },
+              { label: "0" + n++, value: Math.round(Math.random() * 30) },
             ]);
           }}
         >
