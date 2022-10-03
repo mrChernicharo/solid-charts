@@ -42,23 +42,34 @@ const App: Component = () => {
         </button>
       </div>
 
-      <Chart
-        data={overallData()}
-        resizable={true}
-        initialDims={{ width: 400, height: 400 }}
-        transitionDuration={1000}
-        title="my chart"
-        type="pie"
-      />
+      <div style={{ display: "flex" }}>
+        <Chart
+          data={overallData()}
+          resizable
+          initialDims={{ width: 400, height: 400 }}
+          transitionDuration={1000}
+          title="my chart"
+          type="pie"
+        />
 
-      <Chart
-        data={overallData()}
-        resizable={false}
-        initialDims={{ width: 600, height: 400 }}
-        transitionDuration={1000}
-        title="my chart"
-        type="pie"
-      />
+        <Chart
+          data={overallData()}
+          resizable
+          initialDims={{ width: 600, height: 400 }}
+          transitionDuration={1000}
+          title="my chart"
+          type="pie"
+        />
+
+        <Chart
+          data={overallData()}
+          resizable={false}
+          initialDims={{ width: 600, height: 400 }}
+          transitionDuration={1000}
+          title="my chart"
+          type="pie"
+        />
+      </div>
     </div>
   );
 };

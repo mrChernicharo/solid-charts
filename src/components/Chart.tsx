@@ -33,7 +33,7 @@ const Chart: Component<{
   let filteredPoints: number[] = [];
 
   const computed = createMemo(() => {
-    const radius = height() / 2 - margin.top;
+    const radius = Math.min(height(), dims().width) / 2 - margin.top;
 
     const paths: {
       path: string;

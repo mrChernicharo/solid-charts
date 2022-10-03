@@ -30,9 +30,9 @@ const Legends: Component<{
           </div>
         )}
       </For>
-      <pre style={{ margin: "0", overflow: "hidden" }}>
+      {/* <pre style={{ margin: "0", overflow: "hidden" }}>
         {JSON.stringify(props.data)}
-      </pre>
+      </pre> */}
     </header>
   );
 };
