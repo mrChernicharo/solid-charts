@@ -44,6 +44,31 @@ const App: Component = () => {
                     );
                   }}
                 </Index>
+
+                <button
+                  onClick={(e) => {
+                    setStore(chartName(), (prev) => [
+                      ...prev,
+                      {
+                        label: "0" + n++,
+                        value: Math.round(Math.random() * 30),
+                      },
+                    ]);
+                  }}
+                >
+                  ADD
+                </button>
+
+                <div style={{ display: "flex" }}>
+                  <Chart
+                    data={store[chartName()].map((d) => ({ ...d }))}
+                    resizable
+                    initialDims={{ width: 400, height: 400 }}
+                    transitionDuration={1000}
+                    title="my chart"
+                    type="pie"
+                  />
+                </div>
               </>
             );
           }}
