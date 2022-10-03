@@ -10,14 +10,14 @@ import TransitionContainer from "./TransitionContainer";
 import { arc, interpolateCool, interpolateInferno, interpolateReds } from "d3";
 import { getColor } from "../lib/helpers";
 import ChartLegend from "./ChartLegend";
+import ResizableContainer from "./ResizableContainer";
 
 const arcBuilder = arc();
 
 const Chart: Component<{
   type: string;
   title: string;
-  height: number;
-  width: number;
+  initialDims: { width: number; height: number };
   transitionDuration: number;
   data: DataPoint[];
   onToggleHidden: (d: DataPoint, idx: number) => void;
@@ -25,7 +25,8 @@ const Chart: Component<{
   let legendsRef!: HTMLDivElement;
   const margin = { top: 10, bottom: 10, left: 10, right: 10 };
 
-  const [height, setHeight] = createSignal(props.height);
+  const [height, setHeight] = createSignal(props.initialDims.height);
+  const [dims, setDims] = createSignal(props.initialDims);
   const [chartData, setChartData] = createSignal<DataPoint[]>(props.data);
 
   const computed = createMemo(() => {
@@ -70,12 +71,11 @@ const Chart: Component<{
   });
 
   createEffect(() => {
-    setHeight(props.height - legendsRef.getBoundingClientRect().height);
+    props.data.length; // changes in data.length might affect legendsRef.height
+    setHeight(dims().height - legendsRef.getBoundingClientRect().height);
   });
 
-  // createEffect(() => {
-  //   console.log({ data: props.data });
-  // });
+  createEffect(() => {});
 
   return (
     <TransitionContainer
@@ -83,20 +83,30 @@ const Chart: Component<{
       data={props.data}
       onUpdate={setChartData}
     >
-      <ChartLegend
-        ref={legendsRef}
-        data={props.data}
-        title={props.title}
-        onToggleHiddenItem={props.onToggleHidden}
-      />
+      <ResizableContainer
+        initialHeight={props.initialDims.height}
+        initialWidth={props.initialDims.width}
+        onDimensionsChange={setDims}
+      >
+        <ChartLegend
+          ref={legendsRef}
+          data={props.data}
+          title={props.title}
+          onToggleHiddenItem={props.onToggleHidden}
+        />
 
-      <svg width={props.width} height={height()} style={{ background: "#444" }}>
-        <g style={{ transform: `translate(50%, ${height() / 2}px)` }}>
-          <For each={computed().paths}>
-            {(p) => <path d={p.path} fill={p.color} />}
-          </For>
-        </g>
-      </svg>
+        <svg
+          width={dims().width}
+          height={height()}
+          style={{ background: "#444" }}
+        >
+          <g style={{ transform: `translate(50%, ${height() / 2}px)` }}>
+            <For each={computed().paths}>
+              {(p) => <path d={p.path} fill={p.color} />}
+            </For>
+          </g>
+        </svg>
+      </ResizableContainer>
     </TransitionContainer>
   );
 };

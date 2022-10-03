@@ -6,7 +6,6 @@ import { INITIAL_DATA } from "../lib/constants";
 let n = 0;
 const App: Component = () => {
   const [overallData, setOverallData] = createSignal(INITIAL_DATA);
-  const [chartDims, setChartDims] = createSignal({ width: 400, height: 400 });
   return (
     <div>
       <h1>Solid Charts</h1>
@@ -43,27 +42,20 @@ const App: Component = () => {
         </button>
       </div>
 
-      <ResizableContainer
-        initialHeight={400}
-        initialWidth={400}
-        onDimensionsChange={setChartDims}
-      >
-        <Chart
-          data={overallData()}
-          height={chartDims().height}
-          width={chartDims().width}
-          transitionDuration={1000}
-          onToggleHidden={(d, i) =>
-            setOverallData((prev) =>
-              prev.map((o, oIdx) =>
-                oIdx === i ? { ...o, hidden: !o.hidden } : o
-              )
+      <Chart
+        data={overallData()}
+        initialDims={{ width: 400, height: 400 }}
+        transitionDuration={1000}
+        onToggleHidden={(d, i) =>
+          setOverallData((prev) =>
+            prev.map((o, oIdx) =>
+              oIdx === i ? { ...o, hidden: !o.hidden } : o
             )
-          }
-          title="my chart"
-          type="pie"
-        />
-      </ResizableContainer>
+          )
+        }
+        title="my chart"
+        type="pie"
+      />
     </div>
   );
 };
