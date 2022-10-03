@@ -18,6 +18,7 @@ const Chart: Component<{
   title: string;
   height: number;
   width: number;
+  transitionDuration: number;
   data: DataPoint[];
   onToggleHidden: (d: DataPoint, idx: number) => void;
 }> = (props) => {
@@ -78,7 +79,7 @@ const Chart: Component<{
 
   return (
     <TransitionContainer
-      duration={1000}
+      duration={props.transitionDuration}
       data={props.data}
       onUpdate={setChartData}
     >
