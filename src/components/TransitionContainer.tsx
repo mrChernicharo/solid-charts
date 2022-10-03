@@ -66,32 +66,37 @@ const TransitionContainer: Component<{
 
     // standalone value updated
     data().forEach((d, idx, arr) => {
+      if (prevList[idx] && prevList[idx].hidden && arr[idx].hidden) {
+        console.log("hidden item", idx);
+        updateTransitionList(0, idx);
+        return { ...d, value: 0, hidden: true };
+      }
+
       if (prevList[idx] && prevList[idx].value !== arr[idx].value) {
-        // console.log("useTransitionValue! value updating!", { prevList, arr, value: arr[idx].value });
-        console.log("standalone value updated");
         useTransitionValue({
           id: String(idx),
           initial: prevList[idx].value,
-          final: arr[idx].value,
+          final: data()[idx].value,
           duration: props.duration,
           cb: (val: number) => updateTransitionList(val, idx),
         });
       }
 
+      // visibility changed
       if (prevList[idx] && prevList[idx].hidden !== arr[idx].hidden) {
-        const [hasHidden, wasHidden] = [arr[idx].hidden, prevList[idx].hidden];
-        if (hasHidden) {
-          console.log("visibility changed: Has Hidden", { idx });
+        // just hidden
+        if (arr[idx].hidden) {
           useTransitionValue({
             id: String(idx),
-            initial: arr[idx].value,
+            initial: data()[idx].value,
             final: 0,
             duration: props.duration,
             cb: (val: number) => updateTransitionList(val, idx),
           });
         }
 
-        if (wasHidden) {
+        // just shown
+        if (prevList[idx].hidden) {
           console.log("visibility changed: Was Hidden");
           useTransitionValue({
             id: String(idx),

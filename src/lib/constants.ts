@@ -5,8 +5,8 @@ export interface DataPoint {
 }
 
 export const INITIAL_DATA: DataPoint[] = [
-  { label: "A", value: 10 },
-  { label: "B", value: 20 },
+  { label: "A", value: 20 },
+  { label: "B", value: 15 },
   { label: "C", value: 10 },
   { label: "D", value: 40 },
   { label: "E", value: 25 },

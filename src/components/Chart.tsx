@@ -80,7 +80,10 @@ const Chart: Component<{
     <TransitionContainer
       duration={1000}
       data={props.data}
-      onUpdate={setChartData}
+      onUpdate={(d) => {
+        console.log(d);
+        setChartData(d);
+      }}
     >
       <ChartLegend
         ref={legendsRef}
