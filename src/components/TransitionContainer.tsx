@@ -63,29 +63,16 @@ const TransitionContainer: Component<{
       });
     }
 
-    // standalone value updated
-    data().forEach((d, idx, arr) => {
+    for (let [idx, d] of data().entries()) {
       // hidden item
-      if (prevList[idx] && prevList[idx].hidden && arr[idx].hidden) {
+      if (prevList[idx] && prevList[idx].hidden && data()[idx].hidden) {
         updateTransitionList(0, idx);
-        return { ...d, value: 0, hidden: true };
-      }
-
-      // updating item
-      if (prevList[idx] && prevList[idx].value !== arr[idx].value) {
-        useTransitionValue({
-          id: String(idx),
-          initial: prevList[idx].value,
-          final: data()[idx].value,
-          duration: props.duration,
-          cb: (val: number) => updateTransitionList(val, idx),
-        });
       }
 
       // visibility changed
-      if (prevList[idx] && prevList[idx].hidden !== arr[idx].hidden) {
+      if (prevList[idx] && prevList[idx].hidden !== data()[idx].hidden) {
         // just hidden
-        if (arr[idx].hidden) {
+        if (data()[idx].hidden) {
           useTransitionValue({
             id: String(idx),
             initial: data()[idx].value,
@@ -100,18 +87,45 @@ const TransitionContainer: Component<{
           useTransitionValue({
             id: String(idx),
             initial: 0,
-            final: arr[idx].value,
+            final: data()[idx].value,
             duration: props.duration,
             cb: (val: number) => updateTransitionList(val, idx),
           });
         }
       }
-    });
+
+      // updating item
+      if (prevList[idx] && prevList[idx].value !== data()[idx].value) {
+        if (data()[idx].hidden) {
+          // update hidden item;
+          useTransitionValue({
+            id: String(idx),
+            initial: 0,
+            final: 0,
+            duration: props.duration,
+            cb: (val: number) => updateTransitionList(val, idx),
+          });
+        } else {
+          // update visible item;
+          useTransitionValue({
+            id: String(idx),
+            initial: prevList[idx].value,
+            final: data()[idx].value,
+            duration: props.duration,
+            cb: (val: number) => updateTransitionList(val, idx),
+          });
+        }
+      }
+    }
   });
 
   createEffect(() => {
     props.onUpdate(transitionList());
   });
+
+  // createEffect(() => {
+  //   setInterval(() => console.log(transitionList()), 2000);
+  // });
 
   return <>{props.children}</>;
 };
