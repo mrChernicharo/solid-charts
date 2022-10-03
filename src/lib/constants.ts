@@ -13,6 +13,19 @@ export const INITIAL_DATA: DataPoint[] = [
   { label: "F", value: 10 },
 ];
 
+export const INITIAL_STORE: { [id: string]: DataPoint[] } = {
+  "chart 01": [
+    { label: "A", value: 20 },
+    { label: "B", value: 15 },
+    { label: "C", value: 10 },
+  ],
+  "chart 02": [
+    { label: "D", value: 40 },
+    { label: "E", value: 25 },
+    { label: "F", value: 10 },
+  ],
+};
+
 export const s = {
   body: {
     // width: '100vw',

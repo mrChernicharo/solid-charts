@@ -1,14 +1,24 @@
-import { Component, createSignal, Index } from "solid-js";
+import { Component, createSignal, Index, For } from "solid-js";
+import { createStore } from "solid-js/store";
 import Chart from "./Chart";
-import ResizableContainer from "./ResizableContainer";
-import { INITIAL_DATA } from "../lib/constants";
+import { INITIAL_DATA, INITIAL_STORE } from "../lib/constants";
 
 let n = 0;
 const App: Component = () => {
+  const [store, setStore] = createStore(INITIAL_STORE);
   const [overallData, setOverallData] = createSignal(INITIAL_DATA);
+
+  const storeItems = () => Object.keys(store).map((k) => store[k]);
+
   return (
     <div>
       <h1>Solid Charts</h1>
+
+      <Index each={storeItems()}>
+        {(chart, idx) => {
+          return <pre>{JSON.stringify(chart())}</pre>;
+        }}
+      </Index>
 
       <div>
         <Index each={overallData()}>
@@ -47,24 +57,6 @@ const App: Component = () => {
           data={overallData()}
           resizable
           initialDims={{ width: 400, height: 400 }}
-          transitionDuration={1000}
-          title="my chart"
-          type="pie"
-        />
-
-        <Chart
-          data={overallData()}
-          resizable
-          initialDims={{ width: 600, height: 400 }}
-          transitionDuration={1000}
-          title="my chart"
-          type="pie"
-        />
-
-        <Chart
-          data={overallData()}
-          resizable={false}
-          initialDims={{ width: 600, height: 400 }}
           transitionDuration={1000}
           title="my chart"
           type="pie"
