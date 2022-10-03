@@ -1,7 +1,7 @@
 import { Component, createSignal, Index } from "solid-js";
-import Chart from "./components/Chart";
-import ResizableContainer from "./components/ResizableContainer";
-import { INITIAL_DATA } from "./lib/constants";
+import Chart from "./Chart";
+import ResizableContainer from "./ResizableContainer";
+import { INITIAL_DATA } from "../lib/constants";
 
 const App: Component = () => {
   const [overallData, setOverallData] = createSignal(INITIAL_DATA);

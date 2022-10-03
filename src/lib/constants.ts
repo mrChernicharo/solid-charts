@@ -1,6 +1,7 @@
 export interface DataPoint {
   label: string;
   value: number;
+  hidden?: boolean;
 }
 
 export const INITIAL_DATA: DataPoint[] = [

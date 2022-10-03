@@ -5,9 +5,11 @@ import {
   createSignal,
   For,
 } from "solid-js";
-import { DataPoint } from "../App";
+import { DataPoint } from "../lib/constants";
 import TransitionContainer from "./TransitionContainer";
-import { arc, interpolateCool, interpolateInferno } from "d3";
+import { arc, interpolateCool, interpolateInferno, interpolateReds } from "d3";
+import { getColor } from "../lib/helpers";
+import ChartLegend from "./ChartLegend";
 
 const arcBuilder = arc();
 
@@ -18,14 +20,11 @@ const Chart: Component<{
   width: number;
   data: DataPoint[];
 }> = (props) => {
-  let headerRef!: HTMLDivElement;
+  let legendsRef!: HTMLDivElement;
   const margin = { top: 10, bottom: 10, left: 10, right: 10 };
 
   const [height, setHeight] = createSignal(props.height);
   const [chartData, setChartData] = createSignal<DataPoint[]>(props.data);
-
-  const getColor = (num: number) =>
-    interpolateCool((num + 1) / chartData().length);
 
   const computed = createMemo(() => {
     const radius = height() / 2 - margin.top;
@@ -36,12 +35,17 @@ const Chart: Component<{
     }[] = [];
 
     let angle = 0;
-    const total = chartData().reduce((acc, d) => acc + d.value, 0);
+    const total = chartData().reduce(
+      (acc, d) => acc + (d.hidden ? 0 : d.value),
+      0
+    );
 
     const arcScale = (v: number) => (v / total) * (Math.PI * 2);
 
     for (const [i, dataPoint] of chartData().entries()) {
-      const { value } = dataPoint;
+      let { value, hidden } = dataPoint;
+      if (hidden) value = 0;
+
       const endAngle = angle + arcScale(value);
 
       const path = arcBuilder({
@@ -52,18 +56,10 @@ const Chart: Component<{
         padAngle: 0.01,
       })!;
 
-      // const path = arcBuilder({
-      //   outerRadius: radius,
-      //   innerRadius: 0,
-      //   startAngle: angle,
-      //   endAngle: endAngle,
-      //   padAngle: 0,
-      // })!;
-
       angle = endAngle;
       paths.push({
         path,
-        color: getColor(i),
+        color: getColor(i, chartData()),
       });
     }
 
@@ -71,7 +67,7 @@ const Chart: Component<{
   });
 
   createEffect(() => {
-    setHeight(props.height - headerRef.getBoundingClientRect().height);
+    setHeight(props.height - legendsRef.getBoundingClientRect().height);
   });
 
   return (
@@ -80,29 +76,7 @@ const Chart: Component<{
       data={props.data}
       onUpdate={setChartData}
     >
-      <header
-        style={{ background: "#444", overflow: "hidden", display: "flex" }}
-        ref={headerRef}
-      >
-        <div>{props.title}</div>
-        <For each={props.data}>
-          {(d, i) => (
-            <div style={{ display: "flex" }}>
-              <div
-                style={{
-                  background: getColor(i()),
-                  width: "24px",
-                  height: "16px",
-                  "border-radius": "4px",
-                  "margin-inline": "5px",
-                }}
-              ></div>
-              <div>{d.label}</div>
-            </div>
-          )}
-        </For>
-        {/* <pre style={{ margin: "0" }}>{JSON.stringify(chartData())}</pre> */}
-      </header>
+      <ChartLegend ref={legendsRef} data={props.data} title={props.title} />
 
       <svg width={props.width} height={height()} style={{ background: "#444" }}>
         <g style={{ transform: `translate(50%, ${height() / 2}px)` }}>
