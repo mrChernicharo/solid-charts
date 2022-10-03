@@ -1,5 +1,5 @@
 import { Component, For } from "solid-js";
-import { DataPoint } from "../lib/constants";
+import { DataPoint, s } from "../lib/constants";
 import { getColor } from "../lib/helpers";
 
 const ChartLegend: Component<{
@@ -11,32 +11,19 @@ const ChartLegend: Component<{
   return (
     <header
       ref={props.ref}
-      style={{
-        background: "#444",
-        display: "flex",
-        "flex-wrap": "wrap",
-        padding: ".5rem",
-      }}
+      style={{ ...s.legendContainer, "flex-wrap": "wrap" }}
     >
       <div>{props.title}</div>
       <For each={props.data}>
         {(d, idx) => (
           <div
-            style={{ display: "flex", "margin-bottom": "5px" }}
-            onClick={(e) => {
-              props.onToggleHiddenItem(d, idx());
-            }}
+            style={s.legendItem}
+            onClick={(e) => props.onToggleHiddenItem(d, idx())}
           >
             <div
               style={{
-                background: props.data[idx()].hidden
-                  ? "#cdcdcd"
-                  : getColor(idx(), props.data),
-                width: "24px",
-                height: "16px",
-                "border-radius": "4px",
-                "margin-inline": "8px",
-                "margin-top": "2px",
+                ...s.legendBtn,
+                background: d.hidden ? "#cdcdcd" : getColor(idx(), props.data),
               }}
             ></div>
             <div>{d.label}</div>
