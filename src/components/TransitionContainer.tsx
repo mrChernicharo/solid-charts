@@ -10,16 +10,16 @@ import { useTransitionValue } from "use-transition-value";
 
 const TransitionContainer: Component<{
   children: JSXElement;
-  data: PieDataPoint[];
+  data: PieDataPoint[] | LineDataPoint[];
   duration: number;
-  onUpdate: (data: PieDataPoint[]) => void;
+  onUpdate: (data: PieDataPoint[] | LineDataPoint[]) => void;
 }> = (props) => {
-  let prevList: PieDataPoint[] = [];
+  let prevList: PieDataPoint[] | LineDataPoint[] = [];
 
-  const [data, setData] = createSignal<PieDataPoint[]>([]);
-  const [transitionList, setTransitionList] = createSignal<PieDataPoint[]>(
-    props.data
-  );
+  const [data, setData] = createSignal<PieDataPoint[] | LineDataPoint[]>([]);
+  const [transitionList, setTransitionList] = createSignal<
+    PieDataPoint[] | LineDataPoint[]
+  >(props.data);
 
   const val = (data: PieDataPoint[] | LineDataPoint[], idx: number) => {
     if ("value" in data[0]) {
@@ -35,9 +35,21 @@ const TransitionContainer: Component<{
 
   const updateTransitionList = (curr: number, idx: number) => {
     // console.log({ curr, idx });
-    setTransitionList((list) =>
-      list.map((d, i) => (i === idx ? { ...d, value: curr } : d))
-    );
+    setTransitionList((list) => {
+      if ("value" in data()[0]) {
+        return (list as PieDataPoint[]).map((d, i) =>
+          i === idx ? { ...d, value: curr } : d
+        );
+      }
+
+      if ("y" in data()[0]) {
+        return (list as LineDataPoint[]).map((d, i) =>
+          i === idx ? { ...d, y: curr } : d
+        );
+      }
+
+      return [];
+    });
   };
   // data setup: receiving bulk data via props
   createEffect(() => {
@@ -76,56 +88,61 @@ const TransitionContainer: Component<{
     }
 
     for (let [idx, d] of data().entries()) {
-      // hidden item
-      if (prevList[idx] && prevList[idx].hidden && data()[idx].hidden) {
-        updateTransitionList(0, idx);
-      }
+      if ("value" in d) {
+        const point = (idx: number) => data()[idx] as PieDataPoint;
+        const prevPoint = (idx: number) => (prevList as PieDataPoint[])[idx];
 
-      // visibility changed
-      if (prevList[idx] && prevList[idx].hidden !== data()[idx].hidden) {
-        // just hidden
-        if (data()[idx].hidden) {
-          useTransitionValue({
-            id: String(idx),
-            initial: val(data(), idx),
-            final: 0,
-            duration: props.duration,
-            cb: (val: number) => updateTransitionList(val, idx),
-          });
+        // hidden item
+        if (prevPoint(idx) && prevPoint(idx).hidden && point(idx).hidden) {
+          updateTransitionList(0, idx);
         }
 
-        // just shown
-        if (prevList[idx].hidden) {
-          useTransitionValue({
-            id: String(idx),
-            initial: 0,
-            final: val(data(), idx),
-            duration: props.duration,
-            cb: (val: number) => updateTransitionList(val, idx),
-          });
-        }
-      }
+        // visibility changed
+        if (prevPoint(idx) && prevPoint(idx).hidden !== point(idx).hidden) {
+          // just hidden
+          if ((data()[idx] as PieDataPoint).hidden) {
+            useTransitionValue({
+              id: String(idx),
+              initial: val(data(), idx),
+              final: 0,
+              duration: props.duration,
+              cb: (val: number) => updateTransitionList(val, idx),
+            });
+          }
 
-      // updating item
-      if (prevList[idx] && prevList[idx].value !== val(data(), idx)) {
-        if (data()[idx].hidden) {
-          // update hidden item;
-          useTransitionValue({
-            id: String(idx),
-            initial: 0,
-            final: 0,
-            duration: props.duration,
-            cb: (val: number) => updateTransitionList(val, idx),
-          });
-        } else {
-          // update visible item;
-          useTransitionValue({
-            id: String(idx),
-            initial: prevList[idx].value,
-            final: val(data(), idx),
-            duration: props.duration,
-            cb: (val: number) => updateTransitionList(val, idx),
-          });
+          // just shown
+          if (prevPoint(idx).hidden) {
+            useTransitionValue({
+              id: String(idx),
+              initial: 0,
+              final: val(data(), idx),
+              duration: props.duration,
+              cb: (val: number) => updateTransitionList(val, idx),
+            });
+          }
+        }
+
+        // updating item
+        if (prevPoint(idx) && prevPoint(idx).value !== val(data(), idx)) {
+          if (point(idx).hidden) {
+            // update hidden item;
+            useTransitionValue({
+              id: String(idx),
+              initial: 0,
+              final: 0,
+              duration: props.duration,
+              cb: (val: number) => updateTransitionList(val, idx),
+            });
+          } else {
+            // update visible item;
+            useTransitionValue({
+              id: String(idx),
+              initial: prevPoint(idx).value,
+              final: val(data(), idx),
+              duration: props.duration,
+              cb: (val: number) => updateTransitionList(val, idx),
+            });
+          }
         }
       }
     }
