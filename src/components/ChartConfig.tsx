@@ -4,10 +4,11 @@ import {
   createMemo,
   createSignal,
   For,
+  Index,
   Match,
   Switch,
 } from "solid-js";
-import { DataPoint } from "../lib/constants";
+import { LineDataRow, PieDataPoint } from "../lib/constants";
 import TransitionContainer from "./TransitionContainer";
 import { arc } from "d3";
 import { getColor } from "../lib/helpers";
@@ -24,53 +25,20 @@ const ChartConfig: Component<{
   transitionDuration: number;
   resizable: boolean;
   colorScheme: string;
-  data: DataPoint[];
+  data: PieDataPoint[] | LineDataRow[];
 }> = (props) => {
   let legendsRef!: HTMLDivElement;
-  const margin = { top: 10, bottom: 10, left: 10, right: 10 };
 
   const [height, setHeight] = createSignal(props.initialDims.height);
   const [dims, setDims] = createSignal(props.initialDims);
 
-  const [bulkData, setBulkData] = createSignal<DataPoint[]>(props.data);
-  const [chartData, setChartData] = createSignal<DataPoint[]>([]);
+  const [bulkData, setBulkData] = createSignal<PieDataPoint[] | LineDataRow[]>(
+    props.data
+  );
+  const [chartData, setChartData] = createSignal<
+    PieDataPoint[] | LineDataRow[]
+  >([]);
   let filteredPoints: number[] = [];
-
-  const computed = createMemo(() => {
-    const radius = Math.min(height(), dims().width) / 2 - margin.top;
-
-    const paths: {
-      path: string;
-      color: string;
-    }[] = [];
-
-    let angle = 0;
-    const total = chartData().reduce((acc, d) => acc + d.value, 0);
-
-    const arcScale = (v: number) => (v / total) * (Math.PI * 2);
-
-    for (const [i, dataPoint] of chartData().entries()) {
-      let { value } = dataPoint;
-
-      const endAngle = angle + arcScale(value);
-
-      const path = arcBuilder({
-        outerRadius: radius,
-        innerRadius: radius * 0.65,
-        startAngle: angle,
-        endAngle: endAngle,
-        padAngle: 0.01,
-      })!;
-
-      angle = endAngle;
-      paths.push({
-        path,
-        color: getColor(i, chartData(), props.colorScheme),
-      });
-    }
-
-    return { paths };
-  });
 
   createEffect(() => {
     filteredPoints = bulkData()
@@ -78,57 +46,93 @@ const ChartConfig: Component<{
       .filter((o) => o !== -1);
 
     // changes in data.length might affect legendsRef.height
-    setHeight(dims().height - legendsRef.getBoundingClientRect().height);
+    setHeight(dims().height - legendsRef?.getBoundingClientRect().height || 0);
   });
 
   createEffect(() => {
-    setBulkData(
-      props.data.map((d, i) =>
-        filteredPoints.includes(i) ? { ...d, hidden: true } : d
-      )
-    );
+    // console.log(props.data);
+    if ("value" in props.data[0]) {
+      setBulkData(
+        (props.data as PieDataPoint[]).map((d, i) =>
+          filteredPoints.includes(i) ? { ...d, hidden: true } : d
+        )
+      );
+    }
+    if ("values" in props.data[0]) {
+      console.log(props.data[0].label, props.data[0].values);
+      setBulkData(props.data as LineDataRow[]);
+    }
   });
 
-  createEffect(() => {});
-
   return (
-    <TransitionContainer
-      duration={props.transitionDuration}
-      data={bulkData()}
-      onUpdate={setChartData}
+    <ResizableContainer
+      canResize={props.resizable}
+      initialHeight={props.initialDims.height}
+      initialWidth={props.initialDims.width}
+      onDimensionsChange={setDims}
     >
-      <ResizableContainer
-        canResize={props.resizable}
-        initialHeight={props.initialDims.height}
-        initialWidth={props.initialDims.width}
-        onDimensionsChange={setDims}
-      >
-        <Legends
-          ref={legendsRef}
-          data={bulkData()}
-          title={props.title}
-          colorScheme={props.colorScheme}
-          onToggleItem={(d, i) =>
-            setBulkData((prev) =>
-              prev.map((o, oIdx) =>
-                oIdx === i ? { ...o, hidden: !o.hidden } : o
-              )
-            )
-          }
-        />
-
-        <Switch>
-          <Match when={props.type === "pie"}>
+      <Switch>
+        <Match when={props.type === "pie"}>
+          <TransitionContainer
+            duration={props.transitionDuration}
+            data={bulkData() as PieDataPoint[]}
+            onUpdate={setChartData}
+          >
+            <Legends
+              ref={legendsRef}
+              data={bulkData() as PieDataPoint[]}
+              title={props.title}
+              colorScheme={props.colorScheme}
+              onToggleItem={(d, i) =>
+                setBulkData((prev) =>
+                  (prev as PieDataPoint[]).map((o, oIdx) =>
+                    oIdx === i ? { ...o, hidden: !o.hidden } : o
+                  )
+                )
+              }
+            />
             <Pie
               height={height()}
               width={dims().width}
               colorScheme={props.colorScheme}
-              data={chartData()}
+              data={chartData() as PieDataPoint[]}
             />
-          </Match>
-        </Switch>
-      </ResizableContainer>
-    </TransitionContainer>
+          </TransitionContainer>
+        </Match>
+
+        <Match when={props.type === "line"}>
+          <Index each={props.data as LineDataRow[]}>
+            {(row) => <div>{row().label}</div>}
+          </Index>
+
+          {/* <TransitionContainer
+            duration={props.transitionDuration}
+            data={bulkData() as PieDataPoint[]}
+            onUpdate={setChartData}
+          >
+            <Legends
+              ref={legendsRef}
+              data={bulkData() as PieDataPoint[]}
+              title={props.title}
+              colorScheme={props.colorScheme}
+              onToggleItem={(d, i) =>
+                setBulkData((prev) =>
+                  (prev as PieDataPoint[]).map((o, oIdx) =>
+                    oIdx === i ? { ...o, hidden: !o.hidden } : o
+                  )
+                )
+              }
+            />
+            <Pie
+              height={height()}
+              width={dims().width}
+              colorScheme={props.colorScheme}
+              data={chartData() as PieDataPoint[]}
+            /> 
+          </TransitionContainer> */}
+        </Match>
+      </Switch>
+    </ResizableContainer>
   );
 };
 

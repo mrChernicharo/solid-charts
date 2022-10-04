@@ -1,5 +1,5 @@
 import { Component, createMemo, For } from "solid-js";
-import { DataPoint } from "../lib/constants";
+import { PieDataPoint } from "../lib/constants";
 import { getColor } from "../lib/helpers";
 import { arc } from "d3";
 
@@ -8,7 +8,7 @@ const arcBuilder = arc();
 const Pie: Component<{
   height: number;
   width: number;
-  data: DataPoint[];
+  data: PieDataPoint[];
   colorScheme: string;
 }> = (props) => {
   const margin = { top: 10, bottom: 10, left: 10, right: 10 };
@@ -26,8 +26,8 @@ const Pie: Component<{
 
     const arcScale = (v: number) => (v / total) * (Math.PI * 2);
 
-    for (const [i, dataPoint] of props.data.entries()) {
-      let { value } = dataPoint;
+    for (const [i, PieDataPoint] of props.data.entries()) {
+      let { value } = PieDataPoint;
 
       const endAngle = angle + arcScale(value);
 
@@ -63,7 +63,7 @@ const Pie: Component<{
               fill={p.color}
               onPointerOver={
                 (e) => console.log(props.data[i()])
-                // console.log({ dataPoint: bulkData()[i()], path: p.path })
+                // console.log({ PieDataPoint: bulkData()[i()], path: p.path })
               }
             />
           )}

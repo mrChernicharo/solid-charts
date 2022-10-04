@@ -23,7 +23,7 @@ import {
   interpolateTurbo,
   interpolateInferno,
 } from "d3";
-import { DataPoint } from "./constants";
+import { PieDataPoint } from "./constants";
 
 const colorFuncs = {
   Greys: interpolateGreys,
@@ -50,7 +50,11 @@ const colorFuncs = {
   Inferno: interpolateInferno,
 };
 
-export const getColor = (num: number, data: DataPoint[], colorFunc: string) => {
+export const getColor = (
+  num: number,
+  data: PieDataPoint[],
+  colorFunc: string
+) => {
   // @ts-ignore
   return colorFuncs[colorFuncs[colorFunc] ? colorFunc : "Inferno"](
     (data.length - num) / data.length

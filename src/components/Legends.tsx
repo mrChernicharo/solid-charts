@@ -1,13 +1,13 @@
 import { Component, For } from "solid-js";
-import { DataPoint, s } from "../lib/constants";
+import { PieDataPoint, s } from "../lib/constants";
 import { getColor } from "../lib/helpers";
 
 const Legends: Component<{
   ref: HTMLDivElement;
   title: string;
   colorScheme: string;
-  data: DataPoint[];
-  onToggleItem: (d: DataPoint, idx: number) => void;
+  data: PieDataPoint[];
+  onToggleItem: (d: PieDataPoint, idx: number) => void;
 }> = (props) => {
   return (
     <header

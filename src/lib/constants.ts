@@ -1,31 +1,31 @@
-export interface DataPoint {
+export type PieDataPoint = {
   label: string;
   value: number;
   hidden?: boolean;
-}
+};
 
-export interface PieChartConfig {
+export type PieChartConfig = {
   title: string;
   type: string;
-  data: {
-    label: string;
-    value: number;
-    hidden?: boolean;
-  }[];
-}
+  data: PieDataPoint[];
+};
 
-export interface LineChartConfig {
+export type LineDataRow = {
+  label: string;
+  hidden?: boolean;
+  values: LineDataPoint[];
+};
+
+export type LineDataPoint = {
+  x: string;
+  y: number;
+};
+
+export type LineChartConfig = {
   title: string;
   type: string;
-  data: {
-    label: string;
-    values: {
-      x: string;
-      y: number;
-    }[];
-    hidden?: boolean;
-  }[];
-}
+  data: LineDataRow[];
+};
 
 export const PIE_CHARTS: PieChartConfig[] = [
   {

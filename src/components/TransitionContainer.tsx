@@ -5,21 +5,33 @@ import {
   createSignal,
   JSXElement,
 } from "solid-js";
-import { DataPoint } from "../lib/constants";
+import { LineDataPoint, LineDataRow, PieDataPoint } from "../lib/constants";
 import { useTransitionValue } from "use-transition-value";
 
 const TransitionContainer: Component<{
   children: JSXElement;
-  data: DataPoint[];
+  data: PieDataPoint[];
   duration: number;
-  onUpdate: (data: DataPoint[]) => void;
+  onUpdate: (data: PieDataPoint[]) => void;
 }> = (props) => {
-  let prevList: DataPoint[] = [];
+  let prevList: PieDataPoint[] = [];
 
-  const [data, setData] = createSignal<DataPoint[]>([]);
-  const [transitionList, setTransitionList] = createSignal<DataPoint[]>(
+  const [data, setData] = createSignal<PieDataPoint[]>([]);
+  const [transitionList, setTransitionList] = createSignal<PieDataPoint[]>(
     props.data
   );
+
+  const val = (data: PieDataPoint[] | LineDataPoint[], idx: number) => {
+    if ("value" in data[0]) {
+      return (data[idx] as PieDataPoint)?.value || 0;
+    }
+
+    if ("y" in data[0]) {
+      return (data[idx] as LineDataPoint)?.y || 0;
+    }
+
+    return 0;
+  };
 
   const updateTransitionList = (curr: number, idx: number) => {
     // console.log({ curr, idx });
@@ -38,11 +50,11 @@ const TransitionContainer: Component<{
   createEffect(() => {
     // Initial Transition
     if (prevList.length === 0) {
-      data().forEach((d, idx, arr) => {
+      data().forEach((d, idx) => {
         useTransitionValue({
           id: String(idx),
           initial: 0,
-          final: arr[idx].value,
+          final: val(data(), idx),
           duration: props.duration,
           cb: (val: number) => updateTransitionList(val, idx),
         });
@@ -57,7 +69,7 @@ const TransitionContainer: Component<{
       useTransitionValue({
         id: String(idx),
         initial: 0,
-        final: data()[idx]?.value || 0,
+        final: val(data(), idx),
         duration: props.duration,
         cb: (val: number) => updateTransitionList(val, idx),
       });
@@ -75,7 +87,7 @@ const TransitionContainer: Component<{
         if (data()[idx].hidden) {
           useTransitionValue({
             id: String(idx),
-            initial: data()[idx].value,
+            initial: val(data(), idx),
             final: 0,
             duration: props.duration,
             cb: (val: number) => updateTransitionList(val, idx),
@@ -87,7 +99,7 @@ const TransitionContainer: Component<{
           useTransitionValue({
             id: String(idx),
             initial: 0,
-            final: data()[idx].value,
+            final: val(data(), idx),
             duration: props.duration,
             cb: (val: number) => updateTransitionList(val, idx),
           });
@@ -95,7 +107,7 @@ const TransitionContainer: Component<{
       }
 
       // updating item
-      if (prevList[idx] && prevList[idx].value !== data()[idx].value) {
+      if (prevList[idx] && prevList[idx].value !== val(data(), idx)) {
         if (data()[idx].hidden) {
           // update hidden item;
           useTransitionValue({
@@ -110,7 +122,7 @@ const TransitionContainer: Component<{
           useTransitionValue({
             id: String(idx),
             initial: prevList[idx].value,
-            final: data()[idx].value,
+            final: val(data(), idx),
             duration: props.duration,
             cb: (val: number) => updateTransitionList(val, idx),
           });

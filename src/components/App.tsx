@@ -9,7 +9,12 @@ import {
 } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import Chart from "./ChartConfig";
-import { DataPoint, INITIAL_DATA, LineChartConfig } from "../lib/constants";
+import {
+  PieDataPoint,
+  INITIAL_DATA,
+  LineChartConfig,
+  LineDataRow,
+} from "../lib/constants";
 import ChartConfig from "./ChartConfig";
 
 let n = 0;
@@ -40,7 +45,7 @@ const App: Component = () => {
                     >
                       ADD
                     </button>
-                    <Index each={chart().data as DataPoint[]}>
+                    <Index each={chart().data as PieDataPoint[]}>
                       {(dataPoint, dIdx) => {
                         return (
                           <label for={dataPoint().label}>
@@ -60,7 +65,7 @@ const App: Component = () => {
                     <div style={{ display: "flex" }}>
                       <ChartConfig
                         // prettier-ignore
-                        data={(store[idx].data as DataPoint[]).map((d) => ({ ...d }))}
+                        data={(store[idx].data as PieDataPoint[]).map((d) => ({ ...d }))}
                         resizable
                         initialDims={{ width: 400, height: 400 }}
                         transitionDuration={1000}
@@ -75,6 +80,25 @@ const App: Component = () => {
 
                   <Match when={chart().type === "line"}>
                     <div>Line</div>
+
+                    <Index each={chart().data as LineDataRow[]}>
+                      {(row) => (
+                        <div style={{ display: "flex" }}>
+                          <ChartConfig
+                            // prettier-ignore
+                            data={(store[idx].data as LineDataRow[]).map((d) => ({ ...d, values: d.values.map(p => ({...p}))}))}
+                            resizable
+                            initialDims={{ width: 400, height: 400 }}
+                            transitionDuration={1000}
+                            colorScheme={
+                              ["Cool", "YlOrRd", "Inferno", "Sinebow"][idx]
+                            }
+                            title={store[idx].title}
+                            type={store[idx].type}
+                          />
+                        </div>
+                      )}
+                    </Index>
                   </Match>
                 </Switch>
               </div>
