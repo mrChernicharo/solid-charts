@@ -4,6 +4,29 @@ export interface DataPoint {
   hidden?: boolean;
 }
 
+export interface PieChartConfig {
+  title: string;
+  type: string;
+  data: {
+    label: string;
+    value: number;
+    hidden?: boolean;
+  }[];
+}
+
+export interface LineChartConfig {
+  title: string;
+  type: string;
+  data: {
+    label: string;
+    values: {
+      x: string;
+      y: number;
+    }[];
+    hidden?: boolean;
+  }[];
+}
+
 export const INITIAL_DATA: DataPoint[] = [
   { label: "A", value: 20 },
   { label: "B", value: 15 },
@@ -26,13 +49,85 @@ export const INITIAL_STORE: { [id: string]: DataPoint[] } = {
   ],
   "chart 03": [
     { label: "G", value: 40 },
-    { label: "H", value: 25 },
+    { label: "H", value: 28 },
+    { label: "I", value: 32 },
+    { label: "J", value: 18 },
+    { label: "K", value: 28 },
+    { label: "L", value: 14 },
   ],
   "chart 04": [
-    { label: "I", value: 40 },
-    { label: "J", value: 25 },
+    { label: "M", value: 28 },
+    { label: "N", value: 32 },
+    { label: "O", value: 14 },
+    { label: "P", value: 18 },
+    { label: "Q", value: 40 },
+    { label: "R", value: 28 },
+    { label: "S", value: 8 },
   ],
 };
+
+export const PIE_CHARTS = [
+  {
+    title: "Chart 01",
+    type: "pie",
+    data: [
+      { label: "A", value: 20 },
+      { label: "B", value: 15 },
+      { label: "C", value: 10 },
+    ],
+  },
+  {
+    title: "Chart 02",
+    type: "pie",
+    data: [
+      { label: "D", value: 20 },
+      { label: "E", value: 15 },
+    ],
+  },
+  {
+    title: "Chart 03",
+    type: "pie",
+    data: [
+      { label: "F", value: 20 },
+      { label: "G", value: 15 },
+      { label: "H", value: 10 },
+    ],
+  },
+  {
+    title: "Chart 04",
+    type: "pie",
+    data: [
+      { label: "I", value: 20 },
+      { label: "J", value: 15 },
+      { label: "L", value: 10 },
+    ],
+  },
+];
+
+export const LINE_CHARTS: LineChartConfig[] = [
+  {
+    title: "Chart 05",
+    type: "line",
+    data: [
+      {
+        label: "Lula",
+        values: [
+          { x: "2022-09-03", y: 49 },
+          { x: "2022-09-13", y: 50 },
+          { x: "2022-09-23", y: 51 },
+        ],
+      },
+      {
+        label: "Bozo",
+        values: [
+          { x: "2022-09-03", y: 37 },
+          { x: "2022-09-13", y: 35 },
+          { x: "2022-09-23", y: 34 },
+        ],
+      },
+    ],
+  },
+];
 
 export const s = {
   body: {

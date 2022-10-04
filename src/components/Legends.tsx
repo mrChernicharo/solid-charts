@@ -5,6 +5,7 @@ import { getColor } from "../lib/helpers";
 const Legends: Component<{
   ref: HTMLDivElement;
   title: string;
+  colorScheme: string;
   data: DataPoint[];
   onToggleItem: (d: DataPoint, idx: number) => void;
 }> = (props) => {
@@ -23,7 +24,9 @@ const Legends: Component<{
             <div
               style={{
                 ...s.legendBtn,
-                background: d.hidden ? "#cdcdcd" : getColor(idx(), props.data),
+                background: d.hidden
+                  ? "#cdcdcd"
+                  : getColor(idx(), props.data, props.colorScheme),
               }}
             ></div>
             <div>{d.label}</div>

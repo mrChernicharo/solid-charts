@@ -17,13 +17,25 @@ const App: Component = () => {
             return (
               <div
                 style={{
-                  border: "1px solid",
-                  width: "calc(50vw - 4px)",
-                  overflow: "hidden",
+                  width: "650px",
                 }}
               >
                 <p>{chartName()}</p>
                 {/* <pre>{JSON.stringify(store[chartName()])}</pre> */}
+
+                <button
+                  onClick={(e) => {
+                    setStore(chartName(), (prev) => [
+                      ...prev,
+                      {
+                        label: "0" + n++,
+                        value: Math.round(Math.random() * 30),
+                      },
+                    ]);
+                  }}
+                >
+                  ADD
+                </button>
 
                 <Index each={store[chartName()]}>
                   {(dataPoint, dIdx) => {
@@ -48,20 +60,6 @@ const App: Component = () => {
                   }}
                 </Index>
 
-                <button
-                  onClick={(e) => {
-                    setStore(chartName(), (prev) => [
-                      ...prev,
-                      {
-                        label: "0" + n++,
-                        value: Math.round(Math.random() * 30),
-                      },
-                    ]);
-                  }}
-                >
-                  ADD
-                </button>
-
                 <div style={{ display: "flex" }}>
                   <Chart
                     // data={store[chartName()].map((d) => structuredClone({ ...d }))}
@@ -69,6 +67,7 @@ const App: Component = () => {
                     resizable
                     initialDims={{ width: 400, height: 400 }}
                     transitionDuration={1000}
+                    colorScheme={["Cool", "Blues", "Magma", "Sinebow"][idx]}
                     title="my chart"
                     type="pie"
                   />

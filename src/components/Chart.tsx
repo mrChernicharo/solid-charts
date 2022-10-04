@@ -20,6 +20,7 @@ const Chart: Component<{
   initialDims: { width: number; height: number };
   transitionDuration: number;
   resizable: boolean;
+  colorScheme: string;
   data: DataPoint[];
 }> = (props) => {
   let legendsRef!: HTMLDivElement;
@@ -61,7 +62,7 @@ const Chart: Component<{
       angle = endAngle;
       paths.push({
         path,
-        color: getColor(i, chartData()),
+        color: getColor(i, chartData(), props.colorScheme),
       });
     }
 
@@ -103,6 +104,7 @@ const Chart: Component<{
           ref={legendsRef}
           data={bulkData()}
           title={props.title}
+          colorScheme={props.colorScheme}
           onToggleItem={(d, i) =>
             setBulkData((prev) =>
               prev.map((o, oIdx) =>
