@@ -4,6 +4,8 @@ import {
   createMemo,
   createSignal,
   For,
+  Match,
+  Switch,
 } from "solid-js";
 import { DataPoint } from "../lib/constants";
 import TransitionContainer from "./TransitionContainer";
@@ -114,17 +116,30 @@ const Chart: Component<{
           }
         />
 
-        <svg
-          width={dims().width}
-          height={height()}
-          style={{ background: "#444" }}
-        >
-          <g style={{ transform: `translate(50%, ${height() / 2}px)` }}>
-            <For each={computed().paths}>
-              {(p) => <path d={p.path} fill={p.color} />}
-            </For>
-          </g>
-        </svg>
+        <Switch>
+          <Match when={props.type === "pie"}>
+            <svg
+              width={dims().width}
+              height={height()}
+              style={{ background: "#444" }}
+            >
+              <g style={{ transform: `translate(50%, ${height() / 2}px)` }}>
+                <For each={computed().paths}>
+                  {(p, i) => (
+                    <path
+                      d={p.path}
+                      fill={p.color}
+                      onPointerOver={
+                        (e) => console.log(bulkData()[i()])
+                        // console.log({ dataPoint: bulkData()[i()], path: p.path })
+                      }
+                    />
+                  )}
+                </For>
+              </g>
+            </svg>
+          </Match>
+        </Switch>
       </ResizableContainer>
     </TransitionContainer>
   );
