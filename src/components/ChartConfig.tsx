@@ -8,7 +8,7 @@ import {
   Match,
   Switch,
 } from "solid-js";
-import { LineDataRow, PieDataPoint } from "../lib/constants";
+import { LineDataPoint, LineDataRow, PieDataPoint } from "../lib/constants";
 import TransitionContainer from "./TransitionContainer";
 import { arc } from "d3";
 import { getColor } from "../lib/helpers";
@@ -59,7 +59,7 @@ const ChartConfig: Component<{
       );
     }
     if ("values" in props.data[0]) {
-      console.log(props.data[0].label, props.data[0].values);
+      console.log(props.data);
       setBulkData(props.data as LineDataRow[]);
     }
   });
@@ -101,18 +101,16 @@ const ChartConfig: Component<{
         </Match>
 
         <Match when={props.type === "line"}>
-          <Index each={props.data as LineDataRow[]}>
-            {(row) => <div>{row().label}</div>}
-          </Index>
+          <div>{props.title}</div>
 
-          {/* <TransitionContainer
+          <TransitionContainer
             duration={props.transitionDuration}
-            data={bulkData() as PieDataPoint[]}
+            data={bulkData() as LineDataRow[]}
             onUpdate={setChartData}
           >
             <Legends
               ref={legendsRef}
-              data={bulkData() as PieDataPoint[]}
+              data={bulkData() as LineDataRow[]}
               title={props.title}
               colorScheme={props.colorScheme}
               onToggleItem={(d, i) =>
@@ -123,13 +121,14 @@ const ChartConfig: Component<{
                 )
               }
             />
-            <Pie
+            <pre>{JSON.stringify(bulkData(), null, 2)}</pre>
+            {/* <Pie
               height={height()}
               width={dims().width}
               colorScheme={props.colorScheme}
               data={chartData() as PieDataPoint[]}
-            /> 
-          </TransitionContainer> */}
+            /> */}
+          </TransitionContainer>
         </Match>
       </Switch>
     </ResizableContainer>

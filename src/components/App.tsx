@@ -81,24 +81,21 @@ const App: Component = () => {
                   <Match when={chart().type === "line"}>
                     <div>Line</div>
 
-                    <Index each={chart().data as LineDataRow[]}>
-                      {(row) => (
-                        <div style={{ display: "flex" }}>
-                          <ChartConfig
-                            // prettier-ignore
-                            data={(store[idx].data as LineDataRow[]).map((d) => ({ ...d, values: d.values.map(p => ({...p}))}))}
-                            resizable
-                            initialDims={{ width: 400, height: 400 }}
-                            transitionDuration={1000}
-                            colorScheme={
-                              ["Cool", "YlOrRd", "Inferno", "Sinebow"][idx]
-                            }
-                            title={store[idx].title}
-                            type={store[idx].type}
-                          />
-                        </div>
-                      )}
-                    </Index>
+                    <div style={{ display: "flex" }}>
+                      <ChartConfig
+                        // prettier-ignore
+                        // data={(store[idx].data as LineDataRow[]).map((d) => ({ ...d, values: d.values.map(p => ({...p}))}))}
+                        data={(chart().data as LineDataRow[]).map((d) => ({ ...d, values: d.values.map(p => ({...p}))}))}
+                        resizable
+                        initialDims={{ width: 400, height: 400 }}
+                        transitionDuration={1000}
+                        colorScheme={
+                          ["Cool", "YlOrRd", "Inferno", "Sinebow"][idx]
+                        }
+                        title={store[idx].title}
+                        type={store[idx].type}
+                      />
+                    </div>
                   </Match>
                 </Switch>
               </div>

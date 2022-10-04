@@ -111,6 +111,7 @@ export const s = {
   resizableContainer: {
     border: "1px solid",
     height: "400px",
+    overflow: "hidden",
   },
   dragHandle: {
     width: "24px",

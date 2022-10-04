@@ -56,7 +56,7 @@ export const getColor = (
   colorFunc: string
 ) => {
   // @ts-ignore
-  return colorFuncs[colorFuncs[colorFunc] ? colorFunc : "Inferno"](
+  return colorFuncs[colorFuncs[colorFunc] ? colorFunc : "YlOrRd"](
     (data.length - num) / data.length
   );
 };
