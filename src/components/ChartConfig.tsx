@@ -13,10 +13,11 @@ import { arc } from "d3";
 import { getColor } from "../lib/helpers";
 import Legends from "./Legends";
 import ResizableContainer from "./ResizableContainer";
+import Pie from "./Pie";
 
 const arcBuilder = arc();
 
-const Chart: Component<{
+const ChartConfig: Component<{
   type: string;
   title: string;
   initialDims: { width: number; height: number };
@@ -118,26 +119,12 @@ const Chart: Component<{
 
         <Switch>
           <Match when={props.type === "pie"}>
-            <svg
-              width={dims().width}
+            <Pie
               height={height()}
-              style={{ background: "#444" }}
-            >
-              <g style={{ transform: `translate(50%, ${height() / 2}px)` }}>
-                <For each={computed().paths}>
-                  {(p, i) => (
-                    <path
-                      d={p.path}
-                      fill={p.color}
-                      onPointerOver={
-                        (e) => console.log(bulkData()[i()])
-                        // console.log({ dataPoint: bulkData()[i()], path: p.path })
-                      }
-                    />
-                  )}
-                </For>
-              </g>
-            </svg>
+              width={dims().width}
+              colorScheme={props.colorScheme}
+              data={chartData()}
+            />
           </Match>
         </Switch>
       </ResizableContainer>
@@ -145,4 +132,4 @@ const Chart: Component<{
   );
 };
 
-export default Chart;
+export default ChartConfig;

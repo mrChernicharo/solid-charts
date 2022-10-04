@@ -1,11 +1,21 @@
-import { Component, createSignal, Index, For, Switch, Match } from "solid-js";
+import {
+  Component,
+  createSignal,
+  Index,
+  For,
+  Switch,
+  Match,
+  splitProps,
+} from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
-import Chart from "./Chart";
-import { INITIAL_DATA, INITIAL_STORE } from "../lib/constants";
+import Chart from "./ChartConfig";
+import { DataPoint, INITIAL_DATA, LineChartConfig } from "../lib/constants";
+import ChartConfig from "./ChartConfig";
 
 let n = 0;
 const App: Component = () => {
   const [store, setStore] = createStore(INITIAL_DATA);
+  console.log(unwrap(store));
 
   return (
     <div>
@@ -14,7 +24,6 @@ const App: Component = () => {
       <div style={{ display: "flex", "flex-wrap": "wrap" }}>
         <Index each={store}>
           {(chart, idx) => {
-            console.log(chart().title, chart().type, idx);
             return (
               <div
                 style={{
@@ -26,16 +35,12 @@ const App: Component = () => {
                 <Switch>
                   <Match when={chart().type === "pie"}>
                     <button
-                      onClick={(e) => {
-                        // prettier-ignore
-                        setStore(idx, "data", (prev: any) => [ ...prev, { label: "0" + n++, value: Math.round(Math.random() * 30) }]);
-                      }}
+                      // prettier-ignore
+                      onClick={(e) => setStore(idx, "data", store[idx].data.length, ({ label: "0" + n++, value: Math.round(Math.random() * 30) }))}
                     >
                       ADD
                     </button>
-                    <Index
-                      each={chart().data as { label: string; value: number }[]}
-                    >
+                    <Index each={chart().data as DataPoint[]}>
                       {(dataPoint, dIdx) => {
                         return (
                           <label for={dataPoint().label}>
@@ -53,21 +58,25 @@ const App: Component = () => {
                     </Index>
 
                     <div style={{ display: "flex" }}>
-                      <Chart
+                      <ChartConfig
                         // prettier-ignore
-                        data={(
-                          store[idx].data as { label: string; value: number }[]).map((d) => ({ ...d }))}
+                        data={(store[idx].data as DataPoint[]).map((d) => ({ ...d }))}
                         resizable
                         initialDims={{ width: 400, height: 400 }}
                         transitionDuration={1000}
-                        colorScheme={["Cool", "Blues", "Magma", "Sinebow"][idx]}
+                        colorScheme={
+                          ["Cool", "YlOrRd", "Inferno", "Sinebow"][idx]
+                        }
                         title={store[idx].title}
                         type={store[idx].type}
                       />
                     </div>
                   </Match>
+
+                  <Match when={chart().type === "line"}>
+                    <div>Line</div>
+                  </Match>
                 </Switch>
-                {/* <pre>{JSON.stringify(store[chartName()])}</pre> */}
               </div>
             );
           }}
