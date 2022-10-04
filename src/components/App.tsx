@@ -18,12 +18,12 @@ const App: Component = () => {
               <div
                 style={{
                   border: "1px solid",
-                  width: "45vw",
+                  width: "calc(50vw - 4px)",
                   overflow: "hidden",
                 }}
               >
                 <p>{chartName()}</p>
-                <pre>{JSON.stringify(store[chartName()])}</pre>
+                {/* <pre>{JSON.stringify(store[chartName()])}</pre> */}
 
                 <Index each={store[chartName()]}>
                   {(dataPoint, dIdx) => {
@@ -64,6 +64,7 @@ const App: Component = () => {
 
                 <div style={{ display: "flex" }}>
                   <Chart
+                    // data={store[chartName()].map((d) => structuredClone({ ...d }))}
                     data={store[chartName()].map((d) => ({ ...d }))}
                     resizable
                     initialDims={{ width: 400, height: 400 }}

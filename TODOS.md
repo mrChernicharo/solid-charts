@@ -1,3 +1,2 @@
-- move toggleHidden into Chart
-
-- make more charts
+- colorScheme, max-dims, min-dims
+- charts other than pie / ring [accelerator, line, bar, bar+line, vertical-bar, stacked-bars, stacked-areas, tree-map, graph]
