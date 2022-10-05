@@ -57,10 +57,10 @@ const Pie: Component<{
             <path
               d={p.path}
               fill={p.color}
-              onPointerOver={
-                (e) => console.log(props.data[i()])
-                // console.log({ PieDataPoint: bulkData()[i()], path: p.path })
-              }
+              // onPointerOver={
+              //   (e) => console.log(props.data[i()])
+              //   console.log({ PieDataPoint: bulkData()[i()], path: p.path })
+              // }
             />
           )}
         </For>
