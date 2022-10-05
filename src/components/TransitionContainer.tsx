@@ -150,21 +150,21 @@ const TransitionContainer: Component<{
       const prevPoint = (rowIdx: number, idx: number) => row(rowIdx).items[idx];
 
       // Initial Transition
-      if (prevList.length === 0) {
-        // console.log("initial Transition", data(), point(0, 0), point(1, 1));
-        (data() as LineDataRow[]).forEach((row, rowIdx) => {
-          row.items.forEach((el, i) => {
-            const id = `${rowIdx}::${i}`;
-            useTransitionValue({
-              id,
-              initial: 0,
-              final: el.y,
-              duration: props.duration,
-              cb: (val: number) => updateTransitionList(val, i, rowIdx),
-            });
-          });
-        });
-      }
+      // if (prevList.length === 0) {
+      //   // console.log("initial Transition", data(), point(0, 0), point(1, 1));
+      //   (data() as LineDataRow[]).forEach((row, rowIdx) => {
+      //     row.items.forEach((el, i) => {
+      //       const id = `${rowIdx}::${i}`;
+      //       useTransitionValue({
+      //         id,
+      //         initial: 0,
+      //         final: el.y,
+      //         duration: props.duration,
+      //         cb: (val: number) => updateTransitionList(val, i, rowIdx),
+      //       });
+      //     });
+      //   });
+      // }
 
       // // new element added
       // if (prevList.length !== 0 && prevList.length < props.data.length) {

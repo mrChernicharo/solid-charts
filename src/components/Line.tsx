@@ -1,7 +1,8 @@
-import { Component, createEffect, createMemo, For, Index } from "solid-js";
+import { Component, createEffect, createMemo, For, Index, Show } from "solid-js";
 import { LineDataRow } from "../lib/constants";
-import { line, axisBottom, range, AxisDomain, AxisScale, scaleLinear, ticks } from "d3";
+import { line, axisBottom, range, AxisDomain, AxisScale, scaleLinear, ticks, max } from "d3";
 import { getColor } from "../lib/helpers";
+import BottomAxis from "./BottomAxis";
 const lineGenerator = line();
 const Line: Component<{
   height: number;
@@ -9,7 +10,7 @@ const Line: Component<{
   data: LineDataRow[];
   colorScheme: string;
 }> = (props) => {
-  const margin = { top: 10, bottom: 20, left: 40, right: 40 };
+  const margin = { top: 10, bottom: 40, left: 40, right: 40 };
   let minY = Infinity;
   let maxY = -Infinity;
 
@@ -61,6 +62,20 @@ const Line: Component<{
     return { points, lines };
   });
 
+  // const getMinMaxValues = () => {
+  //   let minX = Infinity;
+  //   let minY = Infinity;
+  //   let maxX = -Infinity;
+  //   let maxY = -Infinity;
+
+  // props.data.forEach((row, rowIdx) => {
+  //   row.items.forEach((it, idx) => {
+  //     if (it.y < minY) minY = it.y;
+  //     if (it.y > maxY) maxY = it.y;
+  //   });
+  // });
+  // }
+
   createEffect(() => {
     props.data.forEach((row, rowIdx) => {
       row.items.forEach((it, idx) => {
@@ -72,7 +87,7 @@ const Line: Component<{
 
   return (
     <svg width={props.width} height={props.height} style={{ background: "#444" }}>
-      <g style={{ transform: `translate(${margin.left}px, ${margin.top}px)` }}>
+      <g style={{ transform: `translate(${margin.left}px, 0)` }}>
         <Index each={computed().lines}>
           {(line, idx) => <path d={line()} fill="none" stroke={getColor(idx, props.data, props.colorScheme)} />}
         </Index>
@@ -92,7 +107,13 @@ const Line: Component<{
           )}
         </For>
 
-        {/* <BottomAxis domain={[]} range={[]} /> */}
+        <Show when={props.data.length}>
+          <BottomAxis
+            domain={[props.data[0].items[0].x, props.data[0].items?.at(-1)!.x || 0]}
+            range={[margin.left, props.width - margin.right]}
+            yPos={props.height - margin.bottom}
+          />
+        </Show>
       </g>
 
       {/* <g>
