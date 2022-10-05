@@ -1,10 +1,4 @@
-import {
-  children,
-  Component,
-  createEffect,
-  createSignal,
-  JSXElement,
-} from "solid-js";
+import { children, Component, createEffect, createSignal, JSXElement } from "solid-js";
 import { LineDataRow, LineDataPoint, PieDataPoint } from "../lib/constants";
 import { useTransitionValue } from "use-transition-value";
 
@@ -17,15 +11,9 @@ const TransitionContainer: Component<{
   let prevList: PieDataPoint[] | LineDataRow[] = [];
 
   const [data, setData] = createSignal<PieDataPoint[] | LineDataRow[]>([]);
-  const [transitionList, setTransitionList] = createSignal<
-    PieDataPoint[] | LineDataRow[]
-  >(props.data);
+  const [transitionList, setTransitionList] = createSignal<PieDataPoint[] | LineDataRow[]>(props.data);
 
-  const val = (
-    data: PieDataPoint[] | LineDataRow[],
-    idx: number,
-    rowIdx = -1
-  ) => {
+  const val = (data: PieDataPoint[] | LineDataRow[], idx: number, rowIdx = -1) => {
     if ("value" in data[0]) {
       return (data[idx] as PieDataPoint)?.value || 0;
     }
@@ -37,28 +25,18 @@ const TransitionContainer: Component<{
     return 0;
   };
 
-  const updateTransitionList = (
-    currVal: number,
-    itemIdx: number,
-    rowIndex = -1
-  ) => {
+  const updateTransitionList = (currVal: number, itemIdx: number, rowIndex = -1) => {
     // console.log({ currVal, itemIdx });
     setTransitionList((list) => {
       if ("value" in data()[0]) {
-        return (list as PieDataPoint[]).map((d, i) =>
-          i === itemIdx ? { ...d, value: currVal } : d
-        );
+        return (list as PieDataPoint[]).map((d, i) => (i === itemIdx ? { ...d, value: currVal } : d));
       }
 
       if ("items" in data()[0] && rowIndex !== -1) {
-        // console.log("line chart", currVal, itemIdx, rowIndex);
-
         return (list as LineDataRow[]).map((row, rix) => ({
           label: row.label,
           hidden: row.hidden,
-          items: row.items.map((val, vix) =>
-            rowIndex === rix && itemIdx === vix ? { ...val, y: currVal } : val
-          ),
+          items: row.items.map((val, vix) => (rowIndex === rix && itemIdx === vix ? { ...val, y: currVal } : val)),
         }));
       }
     });

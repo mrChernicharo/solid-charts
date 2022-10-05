@@ -38,16 +38,23 @@ const ChartConfig: Component<{
   });
 
   createEffect(() => {
-    // console.log(props.data);
     if ("value" in props.data[0]) {
       setBulkData(
         (props.data as PieDataPoint[]).map((d, i) => (filteredPoints.includes(i) ? { ...d, hidden: true } : d))
       );
     }
-    if ("values" in props.data[0]) {
-      console.log(props.data);
-      setBulkData(props.data as LineDataRow[]);
+    if ("items" in props.data[0]) {
+      setBulkData(
+        (props.data as LineDataRow[]).map((row, rowIdx) =>
+          filteredPoints.includes(rowIdx) ? { ...row, hidden: true } : row
+        )
+      );
     }
+  });
+
+  createEffect(() => {
+    // console.log({ filteredPoints, height: height() });
+    console.log(bulkData());
   });
 
   return (
@@ -97,12 +104,10 @@ const ChartConfig: Component<{
               colorScheme={props.colorScheme}
               onToggleItem={(d, i) =>
                 setBulkData((prev) =>
-                  (prev as PieDataPoint[]).map((o, oIdx) => (oIdx === i ? { ...o, hidden: !o.hidden } : o))
+                  (prev as LineDataRow[]).map((row, rowIdx) => (rowIdx === i ? { ...row, hidden: !row.hidden } : row))
                 )
               }
             />
-            {/* <pre>{JSON.stringify(bulkData(), null, 2)}</pre> */}
-            {/* <pre>{JSON.stringify(chartData(), null, 2)}</pre> */}
             <Line
               height={height()}
               width={dims().width}

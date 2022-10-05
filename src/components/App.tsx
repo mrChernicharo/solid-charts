@@ -17,11 +17,7 @@ const App: Component = () => {
         <Index each={store}>
           {(chart, idx) => {
             return (
-              <div
-                style={{
-                  width: "650px",
-                }}
-              >
+              <div>
                 <p>{chart().title}</p>
 
                 <Switch>

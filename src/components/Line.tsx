@@ -87,15 +87,11 @@ const Line: Component<{
             </For>
           )}
         </For>
-      </g>
 
-      <Index each={computed().lines}>
-        {(line, idx) => (
-          <g style={{ transform: `translate(${margin.left}px, ${margin.top}px)` }}>
-            <path d={line()} fill="none" stroke={getColor(idx, props.data, props.colorScheme)} />
-          </g>
-        )}
-      </Index>
+        <Index each={computed().lines}>
+          {(line, idx) => <path d={line()} fill="none" stroke={getColor(idx, props.data, props.colorScheme)} />}
+        </Index>
+      </g>
     </svg>
   );
 };
