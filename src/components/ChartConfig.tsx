@@ -15,6 +15,7 @@ import { getColor } from "../lib/helpers";
 import Legends from "./Legends";
 import ResizableContainer from "./ResizableContainer";
 import Pie from "./Pie";
+import Line from "./Line";
 
 const arcBuilder = arc();
 
@@ -121,13 +122,14 @@ const ChartConfig: Component<{
                 )
               }
             />
-            <pre>{JSON.stringify(bulkData(), null, 2)}</pre>
-            {/* <Pie
+            {/* <pre>{JSON.stringify(bulkData(), null, 2)}</pre> */}
+            {/* <pre>{JSON.stringify(chartData(), null, 2)}</pre> */}
+            <Line
               height={height()}
               width={dims().width}
               colorScheme={props.colorScheme}
-              data={chartData() as PieDataPoint[]}
-            /> */}
+              data={chartData() as LineDataRow[]}
+            />
           </TransitionContainer>
         </Match>
       </Switch>

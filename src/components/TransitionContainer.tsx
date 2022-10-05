@@ -267,7 +267,7 @@ const TransitionContainer: Component<{
 
   return (
     <>
-      <pre>{JSON.stringify(transitionList(), null, 2)}</pre>
+      {/* <pre>{JSON.stringify(transitionList(), null, 2)}</pre> */}
       {props.children}
     </>
   );

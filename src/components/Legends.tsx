@@ -35,7 +35,7 @@ const Legends: Component<{
           )}
         </For>
       </Show>
-      <Show when={"values" in props.data[0]}>
+      <Show when={"items" in props.data[0]}>
         <For each={props.data as LineDataRow[]}>
           {(row, idx) => (
             <div
