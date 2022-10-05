@@ -28,8 +28,8 @@ const Line: Component<{
     const maxH = props.height - margin.bottom;
     const W = maxW - minW;
     const H = maxH - minH;
-    const fx = (i: number) => (W / (props.data[0].items.length - 1)) * i;
 
+    const fx = (i: number) => (W / (props.data[0].items.length - 1)) * i;
     const fy = (n: number) => -(((n - minY) / (maxY - minY)) * (H - margin.bottom - margin.top)) + H;
 
     const points: { x: number; y: number }[][] = [];

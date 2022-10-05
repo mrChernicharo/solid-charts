@@ -26,19 +26,22 @@ const TransitionContainer: Component<{
   };
 
   const updateTransitionList = (currVal: number, itemIdx: number, rowIndex = -1) => {
-    // console.log({ currVal, itemIdx });
+    let res: PieDataPoint[] | LineDataRow[] = [];
+
     setTransitionList((list) => {
       if ("value" in data()[0]) {
-        return (list as PieDataPoint[]).map((d, i) => (i === itemIdx ? { ...d, value: currVal } : d));
+        res = (list as PieDataPoint[]).map((d, i) => (i === itemIdx ? { ...d, value: currVal } : d));
       }
 
       if ("items" in data()[0] && rowIndex !== -1) {
-        return (list as LineDataRow[]).map((row, rix) => ({
+        res = (list as LineDataRow[]).map((row, rix) => ({
           label: row.label,
           hidden: row.hidden,
           items: row.items.map((val, vix) => (rowIndex === rix && itemIdx === vix ? { ...val, y: currVal } : val)),
         }));
       }
+
+      return res;
     });
   };
   // data setup: receiving bulk data via props

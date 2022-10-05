@@ -51,7 +51,7 @@ const App: Component = () => {
                         data={(store[idx].data as PieDataPoint[]).map((d) => ({ ...d }))}
                         resizable
                         initialDims={{ width: 400, height: 400 }}
-                        transitionDuration={1000}
+                        transitionDuration={400}
                         colorScheme={["Cool", "YlOrRd", "Inferno", "Sinebow"][idx]}
                         title={store[idx].title}
                         type={store[idx].type}
