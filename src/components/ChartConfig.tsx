@@ -38,12 +38,12 @@ const ChartConfig: Component<{
   });
 
   createEffect(() => {
-    if ("value" in props.data[0]) {
+    if (props.type === "pie") {
       setBulkData(
         (props.data as PieDataPoint[]).map((d, i) => (filteredPoints.includes(i) ? { ...d, hidden: true } : d))
       );
     }
-    if ("items" in props.data[0]) {
+    if (props.type === "line") {
       setBulkData(
         (props.data as LineDataRow[]).map((row, rowIdx) =>
           filteredPoints.includes(rowIdx) ? { ...row, hidden: true } : row
@@ -54,7 +54,7 @@ const ChartConfig: Component<{
 
   createEffect(() => {
     // console.log({ filteredPoints, height: height() });
-    console.log(bulkData());
+    // console.log(bulkData());
   });
 
   return (
