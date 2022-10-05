@@ -65,7 +65,7 @@ const App: Component = () => {
                     resizable
                     initialDims={{ width: 400, height: 400 }}
                     transitionDuration={store[idx].type === "pie" ? 400 : 1500}
-                    colorScheme={["Cool", "YlOrRd", "Inferno", "Sinebow", "Turbo"][idx]}
+                    colorScheme={["Turbo", "YlOrRd", "Inferno", "Cool", "Sinebow"][idx]}
                     title={store[idx].title}
                     type={store[idx].type}
                   />

@@ -1,6 +1,6 @@
 import { Component, createEffect, createMemo, For, Index } from "solid-js";
 import { LineDataRow } from "../lib/constants";
-import { line, axisBottom, range, AxisDomain, AxisScale } from "d3";
+import { line, axisBottom, range, AxisDomain, AxisScale, scaleLinear, ticks } from "d3";
 import { getColor } from "../lib/helpers";
 const lineGenerator = line();
 const Line: Component<{
@@ -21,6 +21,17 @@ const Line: Component<{
   //     [400, 190],
   //   ]);
 
+  // const axisTicks = createMemo(() => {
+  //   const xScale = scaleLinear()
+  //     .domain([
+  //       new Date(props.data[0]?.items[0]?.x || new Date()),
+  //       new Date(props.data[0]?.items.at(-1)!?.x || new Date()),
+  //     ])
+  //     .range([margin.left, props.width - margin.right]);
+
+  //   return xScale.ticks();
+  // });
+
   const computed = createMemo(() => {
     const minW = margin.left;
     const maxW = props.width - margin.right;
@@ -33,31 +44,19 @@ const Line: Component<{
     const fy = (n: number) => -(((n - minY) / (maxY - minY)) * (H - margin.bottom - margin.top)) + H;
 
     const points: { x: number; y: number }[][] = [];
-    const coords: [number, number][][] = [];
     const lines: string[] = [];
 
-    for (const [r, row] of props.data.entries()) {
+    for (const [rowIdx, row] of props.data.entries()) {
       points.push([]);
-      coords.push([]);
+      const lineData: [number, number][] = [];
+
       for (const [i, item] of row.items.entries()) {
         const point = { x: fx(i), y: fy(item.y) };
-        points[r].push(point);
+        points[rowIdx].push(point);
+        lineData.push([point.x, point.y]);
       }
-    }
-
-    points.forEach((row, rowIdx) => {
-      row.forEach((p, i) => {
-        coords[rowIdx].push([p.x, p.y] as [number, number]);
-      });
-    });
-
-    coords.forEach((row, rowIdx) => {
-      const lineData: [number, number][] = [];
-      row.forEach((c, i) => {
-        lineData.push(c);
-      });
       lines[rowIdx] = lineGenerator(lineData)!;
-    });
+    }
 
     return { points, lines };
   });
@@ -74,11 +73,16 @@ const Line: Component<{
   return (
     <svg width={props.width} height={props.height} style={{ background: "#444" }}>
       <g style={{ transform: `translate(${margin.left}px, ${margin.top}px)` }}>
+        <Index each={computed().lines}>
+          {(line, idx) => <path d={line()} fill="none" stroke={getColor(idx, props.data, props.colorScheme)} />}
+        </Index>
+
         <For each={props.data}>
           {(row, rowIdx) => (
             <For each={row.items}>
               {(item, idx) => (
                 <circle
+                  onPointerOver={(e) => console.log(row.label, item.x, item.y)}
                   cx={computed().points[rowIdx()][idx()].x}
                   cy={computed().points[rowIdx()][idx()].y}
                   r={4}
@@ -88,10 +92,21 @@ const Line: Component<{
           )}
         </For>
 
-        <Index each={computed().lines}>
-          {(line, idx) => <path d={line()} fill="none" stroke={getColor(idx, props.data, props.colorScheme)} />}
-        </Index>
+        {/* <BottomAxis domain={[]} range={[]} /> */}
       </g>
+
+      {/* <g>
+        <Index each={axisTicks()}>
+          {(tick, i) => (
+            <g transform={`translate(0, 0)`}>
+              <line y2="6" />
+              <text stroke="white" y="100" x={i * 100}>
+                {new Date(tick()).toLocaleDateString()}
+              </text>
+            </g>
+          )}
+        </Index>
+      </g> */}
     </svg>
   );
 };
