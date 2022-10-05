@@ -1,20 +1,7 @@
-import {
-  Component,
-  createSignal,
-  Index,
-  For,
-  Switch,
-  Match,
-  splitProps,
-} from "solid-js";
+import { Component, createSignal, Index, For, Switch, Match, splitProps } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import Chart from "./ChartConfig";
-import {
-  PieDataPoint,
-  INITIAL_DATA,
-  LineChartConfig,
-  LineDataRow,
-} from "../lib/constants";
+import { PieDataPoint, INITIAL_DATA, LineChartConfig, LineDataRow } from "../lib/constants";
 import ChartConfig from "./ChartConfig";
 
 let n = 0;
@@ -69,9 +56,7 @@ const App: Component = () => {
                         resizable
                         initialDims={{ width: 400, height: 400 }}
                         transitionDuration={1000}
-                        colorScheme={
-                          ["Cool", "YlOrRd", "Inferno", "Sinebow"][idx]
-                        }
+                        colorScheme={["Cool", "YlOrRd", "Inferno", "Sinebow"][idx]}
                         title={store[idx].title}
                         type={store[idx].type}
                       />
@@ -89,9 +74,7 @@ const App: Component = () => {
                         resizable
                         initialDims={{ width: 400, height: 400 }}
                         transitionDuration={1000}
-                        colorScheme={
-                          ["Cool", "YlOrRd", "Inferno", "Sinebow"][idx]
-                        }
+                        colorScheme={["Cool", "YlOrRd", "Inferno", "Sinebow"][idx]}
                         title={store[idx].title}
                         type={store[idx].type}
                       />

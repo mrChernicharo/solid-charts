@@ -1,10 +1,4 @@
-import {
-  Component,
-  createEffect,
-  createSignal,
-  JSXElement,
-  Show,
-} from "solid-js";
+import { Component, createEffect, createSignal, JSXElement, Show } from "solid-js";
 import { s } from "../lib/constants";
 
 const ResizableContainer: Component<{

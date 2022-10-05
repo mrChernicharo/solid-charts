@@ -50,11 +50,7 @@ const Pie: Component<{
   });
 
   return (
-    <svg
-      width={props.width}
-      height={props.height}
-      style={{ background: "#444" }}
-    >
+    <svg width={props.width} height={props.height} style={{ background: "#444" }}>
       <g style={{ transform: `translate(50%, ${props.height / 2}px)` }}>
         <For each={computed().paths}>
           {(p, i) => (

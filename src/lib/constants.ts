@@ -84,6 +84,7 @@ export const LINE_CHARTS: LineChartConfig[] = [
           { x: "2022-09-03", y: 49 },
           { x: "2022-09-13", y: 50 },
           { x: "2022-09-23", y: 51 },
+          { x: "2022-10-2", y: 51 },
         ],
       },
       {
@@ -92,13 +93,23 @@ export const LINE_CHARTS: LineChartConfig[] = [
           { x: "2022-09-03", y: 37 },
           { x: "2022-09-13", y: 35 },
           { x: "2022-09-23", y: 34 },
+          { x: "2022-10-2", y: 35 },
+        ],
+      },
+      {
+        label: "Tebet",
+        items: [
+          { x: "2022-09-03", y: 3 },
+          { x: "2022-09-13", y: 3 },
+          { x: "2022-09-23", y: 4 },
+          { x: "2022-10-2", y: 5 },
         ],
       },
     ],
   },
 ];
 
-export const INITIAL_DATA = [...PIE_CHARTS, ...LINE_CHARTS];
+export const INITIAL_DATA = [...LINE_CHARTS, ...PIE_CHARTS];
 
 export const s = {
   body: {

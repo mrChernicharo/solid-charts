@@ -1,13 +1,4 @@
-import {
-  Component,
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  Index,
-  Match,
-  Switch,
-} from "solid-js";
+import { Component, createEffect, createMemo, createSignal, For, Index, Match, Switch } from "solid-js";
 import { LineDataPoint, LineDataRow, PieDataPoint } from "../lib/constants";
 import TransitionContainer from "./TransitionContainer";
 import { arc } from "d3";
@@ -33,12 +24,8 @@ const ChartConfig: Component<{
   const [height, setHeight] = createSignal(props.initialDims.height);
   const [dims, setDims] = createSignal(props.initialDims);
 
-  const [bulkData, setBulkData] = createSignal<PieDataPoint[] | LineDataRow[]>(
-    props.data
-  );
-  const [chartData, setChartData] = createSignal<
-    PieDataPoint[] | LineDataRow[]
-  >([]);
+  const [bulkData, setBulkData] = createSignal<PieDataPoint[] | LineDataRow[]>(props.data);
+  const [chartData, setChartData] = createSignal<PieDataPoint[] | LineDataRow[]>([]);
   let filteredPoints: number[] = [];
 
   createEffect(() => {
@@ -54,9 +41,7 @@ const ChartConfig: Component<{
     // console.log(props.data);
     if ("value" in props.data[0]) {
       setBulkData(
-        (props.data as PieDataPoint[]).map((d, i) =>
-          filteredPoints.includes(i) ? { ...d, hidden: true } : d
-        )
+        (props.data as PieDataPoint[]).map((d, i) => (filteredPoints.includes(i) ? { ...d, hidden: true } : d))
       );
     }
     if ("values" in props.data[0]) {
@@ -86,9 +71,7 @@ const ChartConfig: Component<{
               colorScheme={props.colorScheme}
               onToggleItem={(d, i) =>
                 setBulkData((prev) =>
-                  (prev as PieDataPoint[]).map((o, oIdx) =>
-                    oIdx === i ? { ...o, hidden: !o.hidden } : o
-                  )
+                  (prev as PieDataPoint[]).map((o, oIdx) => (oIdx === i ? { ...o, hidden: !o.hidden } : o))
                 )
               }
             />
@@ -102,8 +85,6 @@ const ChartConfig: Component<{
         </Match>
 
         <Match when={props.type === "line"}>
-          <div>{props.title}</div>
-
           <TransitionContainer
             duration={props.transitionDuration}
             data={bulkData() as LineDataRow[]}
@@ -116,9 +97,7 @@ const ChartConfig: Component<{
               colorScheme={props.colorScheme}
               onToggleItem={(d, i) =>
                 setBulkData((prev) =>
-                  (prev as PieDataPoint[]).map((o, oIdx) =>
-                    oIdx === i ? { ...o, hidden: !o.hidden } : o
-                  )
+                  (prev as PieDataPoint[]).map((o, oIdx) => (oIdx === i ? { ...o, hidden: !o.hidden } : o))
                 )
               }
             />

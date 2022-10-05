@@ -51,7 +51,7 @@ const TransitionContainer: Component<{
       }
 
       if ("items" in data()[0] && rowIndex !== -1) {
-        console.log("line chart", currVal, itemIdx, rowIndex);
+        // console.log("line chart", currVal, itemIdx, rowIndex);
 
         return (list as LineDataRow[]).map((row, rix) => ({
           label: row.label,
@@ -170,7 +170,7 @@ const TransitionContainer: Component<{
 
       // Initial Transition
       if (prevList.length === 0) {
-        console.log("initial Transition", data(), point(0, 0), point(1, 1));
+        // console.log("initial Transition", data(), point(0, 0), point(1, 1));
         (data() as LineDataRow[]).forEach((row, rowIdx) => {
           row.items.forEach((el, i) => {
             const id = `${rowIdx}::${i}`;
