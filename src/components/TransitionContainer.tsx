@@ -30,31 +30,37 @@ const TransitionContainer: Component<{
       return (data[idx] as PieDataPoint)?.value || 0;
     }
 
-    if ("values" in data[0]) {
-      return (data[rowIdx] as LineDataRow)?.values[idx].y || 0;
+    if ("items" in data[0]) {
+      return (data[rowIdx] as LineDataRow)?.items[idx].y || 0;
     }
 
     return 0;
   };
 
-  const updateTransitionList = (curr: number, idx: number, rowIdx = -1) => {
-    // console.log({ curr, idx });
+  const updateTransitionList = (
+    currVal: number,
+    itemIdx: number,
+    rowIndex = -1
+  ) => {
+    // console.log({ currVal, itemIdx });
     setTransitionList((list) => {
       if ("value" in data()[0]) {
         return (list as PieDataPoint[]).map((d, i) =>
-          i === idx ? { ...d, value: curr } : d
+          i === itemIdx ? { ...d, value: currVal } : d
         );
       }
 
-      if ("values" in data()[0]) {
-        return (list as LineDataRow[]).map((row, ri) =>
-          ri === rowIdx
-            ? row.values.map((d, i) => (i === idx ? { ...d, y: curr } : d))
-            : row
-        ) as LineDataRow[];
-      }
+      if ("items" in data()[0] && rowIndex !== -1) {
+        console.log("line chart", currVal, itemIdx, rowIndex);
 
-      return [];
+        return (list as LineDataRow[]).map((row, rix) => ({
+          label: row.label,
+          hidden: row.hidden,
+          items: row.items.map((val, vix) =>
+            rowIndex === rix && itemIdx === vix ? { ...val, y: currVal } : val
+          ),
+        }));
+      }
     });
   };
   // data setup: receiving bulk data via props
@@ -150,23 +156,103 @@ const TransitionContainer: Component<{
             });
           }
         }
-
-        // LineData
-        if ("values" in d) {
-          const row = (rowIdx: number) => data()[rowIdx] as LineDataRow;
-          const prevRow = (rowIdx: number) =>
-            (prevList as LineDataRow[])[rowIdx];
-
-          const point = (rowIdx: number, idx: number) =>
-            row(rowIdx).values[idx];
-          const prevPoint = (rowIdx: number, idx: number) =>
-            row(rowIdx).values[idx];
-        }
       }
     }
 
     // LINE
-    if ("values" in data()[0]) {
+    if ("items" in data()[0]) {
+      // LineData
+      const row = (rowIdx: number) => data()[rowIdx] as LineDataRow;
+      const point = (rowIdx: number, idx: number) => row(rowIdx).items[idx];
+
+      const prevRow = (rowIdx: number) => (prevList as LineDataRow[])[rowIdx];
+      const prevPoint = (rowIdx: number, idx: number) => row(rowIdx).items[idx];
+
+      // Initial Transition
+      if (prevList.length === 0) {
+        console.log("initial Transition", data(), point(0, 0), point(1, 1));
+        (data() as LineDataRow[]).forEach((row, rowIdx) => {
+          row.items.forEach((el, i) => {
+            const id = `${rowIdx}::${i}`;
+            useTransitionValue({
+              id,
+              initial: 0,
+              final: el.y,
+              duration: props.duration,
+              cb: (val: number) => updateTransitionList(val, i, rowIdx),
+            });
+          });
+        });
+      }
+
+      // // new element added
+      // if (prevList.length !== 0 && prevList.length < props.data.length) {
+      //   let idx = props.data.length - 1;
+      //   // console.log("added new element!", { data: data(), item: data()[idx], idx });
+
+      //   useTransitionValue({
+      //     id: String(idx),
+      //     initial: 0,
+      //     final: val(data(), idx),
+      //     duration: props.duration,
+      //     cb: (val: number) => updateTransitionList(val, idx),
+      //   });
+      // }
+
+      // for (let [idx, d] of data().entries()) {
+      //   // hidden item
+      //   if (prevPoint(idx) && prevPoint(idx).hidden && point(idx).hidden) {
+      //     updateTransitionList(0, idx);
+      //   }
+
+      //   // visibility changed
+      //   if (prevPoint(idx) && prevPoint(idx).hidden !== point(idx).hidden) {
+      //     // just hidden
+      //     if ((data()[idx] as PieDataPoint).hidden) {
+      //       useTransitionValue({
+      //         id: String(idx),
+      //         initial: val(data(), idx),
+      //         final: 0,
+      //         duration: props.duration,
+      //         cb: (val: number) => updateTransitionList(val, idx),
+      //       });
+      //     }
+
+      //     // just shown
+      //     if (prevPoint(idx).hidden) {
+      //       useTransitionValue({
+      //         id: String(idx),
+      //         initial: 0,
+      //         final: val(data(), idx),
+      //         duration: props.duration,
+      //         cb: (val: number) => updateTransitionList(val, idx),
+      //       });
+      //     }
+      //   }
+
+      //   // updating item
+      //   if (prevPoint(idx) && prevPoint(idx).value !== val(data(), idx)) {
+      //     if (point(idx).hidden) {
+      //       // update hidden item;
+      //       useTransitionValue({
+      //         id: String(idx),
+      //         initial: 0,
+      //         final: 0,
+      //         duration: props.duration,
+      //         cb: (val: number) => updateTransitionList(val, idx),
+      //       });
+      //     } else {
+      //       // update visible item;
+      //       useTransitionValue({
+      //         id: String(idx),
+      //         initial: prevPoint(idx).value,
+      //         final: val(data(), idx),
+      //         duration: props.duration,
+      //         cb: (val: number) => updateTransitionList(val, idx),
+      //       });
+      //     }
+      //   }
+      // }
     }
   });
 
@@ -174,11 +260,17 @@ const TransitionContainer: Component<{
     props.onUpdate(transitionList());
   });
 
-  // createEffect(() => {
-  //   setInterval(() => console.log(transitionList()), 2000);
-  // });
+  createEffect(() => {
+    // console.log(transitionList());
+    // setInterval(() => console.log(transitionList()), 2000);
+  });
 
-  return <>{props.children}</>;
+  return (
+    <>
+      <pre>{JSON.stringify(transitionList(), null, 2)}</pre>
+      {props.children}
+    </>
+  );
 };
 
 export default TransitionContainer;

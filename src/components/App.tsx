@@ -84,8 +84,8 @@ const App: Component = () => {
                     <div style={{ display: "flex" }}>
                       <ChartConfig
                         // prettier-ignore
-                        // data={(store[idx].data as LineDataRow[]).map((d) => ({ ...d, values: d.values.map(p => ({...p}))}))}
-                        data={(chart().data as LineDataRow[]).map((d) => ({ ...d, values: d.values.map(p => ({...p}))}))}
+                        // data={(store[idx].data as LineDataRow[]).map((d) => ({ ...d, items: d.items.map(p => ({...p}))}))}
+                        data={(chart().data as LineDataRow[]).map((d) => ({ ...d, items: d.items.map(p => ({...p}))}))}
                         resizable
                         initialDims={{ width: 400, height: 400 }}
                         transitionDuration={1000}

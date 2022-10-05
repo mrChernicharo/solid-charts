@@ -1,30 +1,30 @@
-export type PieDataPoint = {
-  label: string;
-  value: number;
-  hidden?: boolean;
-};
-
 export type PieChartConfig = {
   title: string;
   type: string;
   data: PieDataPoint[];
 };
 
-export type LineDataRow = {
+export type PieDataPoint = {
   label: string;
+  value: number;
   hidden?: boolean;
-  values: LineDataPoint[];
-};
-
-export type LineDataPoint = {
-  x: string;
-  y: number;
 };
 
 export type LineChartConfig = {
   title: string;
   type: string;
   data: LineDataRow[];
+};
+
+export type LineDataRow = {
+  label: string;
+  hidden?: boolean;
+  items: LineDataPoint[];
+};
+
+export type LineDataPoint = {
+  x: string;
+  y: number;
 };
 
 export const PIE_CHARTS: PieChartConfig[] = [
@@ -80,7 +80,7 @@ export const LINE_CHARTS: LineChartConfig[] = [
     data: [
       {
         label: "Lula",
-        values: [
+        items: [
           { x: "2022-09-03", y: 49 },
           { x: "2022-09-13", y: 50 },
           { x: "2022-09-23", y: 51 },
@@ -88,7 +88,7 @@ export const LINE_CHARTS: LineChartConfig[] = [
       },
       {
         label: "Bozo",
-        values: [
+        items: [
           { x: "2022-09-03", y: 37 },
           { x: "2022-09-13", y: 35 },
           { x: "2022-09-23", y: 34 },
