@@ -22,17 +22,6 @@ const Line: Component<{
   //     [400, 190],
   //   ]);
 
-  // const axisTicks = createMemo(() => {
-  //   const xScale = scaleLinear()
-  //     .domain([
-  //       new Date(props.data[0]?.items[0]?.x || new Date()),
-  //       new Date(props.data[0]?.items.at(-1)!?.x || new Date()),
-  //     ])
-  //     .range([margin.left, props.width - margin.right]);
-
-  //   return xScale.ticks();
-  // });
-
   const computed = createMemo(() => {
     const minW = margin.left;
     const maxW = props.width - margin.right;
@@ -62,20 +51,6 @@ const Line: Component<{
     return { points, lines };
   });
 
-  // const getMinMaxValues = () => {
-  //   let minX = Infinity;
-  //   let minY = Infinity;
-  //   let maxX = -Infinity;
-  //   let maxY = -Infinity;
-
-  // props.data.forEach((row, rowIdx) => {
-  //   row.items.forEach((it, idx) => {
-  //     if (it.y < minY) minY = it.y;
-  //     if (it.y > maxY) maxY = it.y;
-  //   });
-  // });
-  // }
-
   createEffect(() => {
     props.data.forEach((row, rowIdx) => {
       row.items.forEach((it, idx) => {
@@ -97,6 +72,7 @@ const Line: Component<{
             <For each={row.items}>
               {(item, idx) => (
                 <circle
+                  fill={getColor(rowIdx(), props.data, props.colorScheme)}
                   onPointerOver={(e) => console.log(row.label, item.x, item.y)}
                   cx={computed().points[rowIdx()][idx()].x}
                   cy={computed().points[rowIdx()][idx()].y}
@@ -115,19 +91,6 @@ const Line: Component<{
           />
         </Show>
       </g>
-
-      {/* <g>
-        <Index each={axisTicks()}>
-          {(tick, i) => (
-            <g transform={`translate(0, 0)`}>
-              <line y2="6" />
-              <text stroke="white" y="100" x={i * 100}>
-                {new Date(tick()).toLocaleDateString()}
-              </text>
-            </g>
-          )}
-        </Index>
-      </g> */}
     </svg>
   );
 };
