@@ -18,7 +18,7 @@ const BottomAxis: Component<{
     ) as number[];
     const xScale = scaleLinear().domain(domain).range(props.range);
     const width = props.range[1] - props.range[0];
-    const pixelsPerTick = 100;
+    const pixelsPerTick = 120;
     const numberOfTicksTarget = Math.max(1, Math.floor(width / pixelsPerTick));
 
     return xScale.ticks(numberOfTicksTarget).map((value) => ({
@@ -29,6 +29,7 @@ const BottomAxis: Component<{
 
   return (
     <g transform={`translate(-${props.range[0]}, ${props.yPos})`}>
+      {/* <g transform={`translate(-${props.range[0]}, ${props.yPos})`}> */}
       <path
         d={
           lineGenerator([
@@ -44,15 +45,21 @@ const BottomAxis: Component<{
           <g transform={`translate(${tick().xOffset}, 0)`}>
             <line y2="6" stroke="currentColor" />
             <text
+              fill="white"
               style={{
                 "font-size": "10px",
                 "text-anchor": "middle",
                 transform: "translateY(20px)",
               }}
             >
-              {new Date(tick().value - new Date(tick().value).getTimezoneOffset() * 60 * 60).toLocaleDateString(
-                "pt-BR"
-              )}
+              {typeof props.domain[0] === "string"
+                ? // ? new Date(tick().value + 13 * 60 * 60 * 1000).toLocaleDateString("de")
+                  new Date(tick().value).toLocaleDateString("de")
+                : tick().value}
+              {/* {new Date(tick().value + 13 * 60 * 60 * 1000).toLocaleDateString("pt-BR")} */}
+              {/* {tick().value} */}
+              {/* {new Date(tick().value).toLocaleDateString("de")} */}
+              {/* {new Date(tick().value).toLocaleDateString("de")} */}
             </text>
           </g>
         )}
